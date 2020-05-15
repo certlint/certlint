@@ -256,7 +256,7 @@ module CertLint
           messages << 'E: EV certificates must include serialNumber in subject'
         end
         if !(subjattrs.include? 'L') && !(subjattrs.include? 'ST')
-            messages << 'E: EV certificates must include either localityName or stateOrProvinceName'
+            messages << 'E: EV certificates must include either localityName or stateOrProvinceName in subject'
         end
         unless subjattrs.include? 'C'
           messages << 'E: EV certificates must include countryName in subject'
