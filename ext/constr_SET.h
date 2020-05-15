@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2003, 2004 Lev Walkin <vlm@lionet.info>. All rights reserved.
+ * Copyright (c) 2003-2017 Lev Walkin <vlm@lionet.info>. All rights reserved.
  * Redistribution and modifications are permitted subject to BSD license.
  */
 #ifndef	_CONSTR_SET_H_
@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 
-typedef const struct asn_SET_specifics_s {
+typedef struct asn_SET_specifics_s {
 	/*
 	 * Target structure description.
 	 */
@@ -55,6 +55,7 @@ xer_type_decoder_f SET_decode_xer;
 xer_type_encoder_f SET_encode_xer;
 per_type_decoder_f SET_decode_uper;
 per_type_encoder_f SET_encode_uper;
+asn_random_fill_f  SET_random_fill;
 extern asn_TYPE_operation_t asn_OP_SET;
 
 /***********************
@@ -70,13 +71,13 @@ extern asn_TYPE_operation_t asn_OP_SET;
 #define	ASN_SET_ISPRESENT2(map_ptr, PR_x)				\
 	(((unsigned int *)(map_ptr))					\
 		[(PR_x)	/ (8 * sizeof(unsigned int))]			\
-		& (1 << ((8 * sizeof(unsigned int)) - 1			\
+		& (1u << ((8 * sizeof(unsigned int)) - 1			\
 		- ((PR_x) % (8 * sizeof(unsigned int))))))
 
 #define	ASN_SET_MKPRESENT(map_ptr, PR_x)				\
 	(((unsigned int *)(map_ptr))					\
 		[(PR_x)	/ (8 * sizeof(unsigned int))]			\
-		|= (1 << ((8 * sizeof(unsigned int)) - 1		\
+		|= (1u << ((8 * sizeof(unsigned int)) - 1		\
 		- ((PR_x) % (8 * sizeof(unsigned int))))))
 
 #ifdef __cplusplus

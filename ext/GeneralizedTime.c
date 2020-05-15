@@ -1,9 +1,10 @@
 /*-
- * Copyright (c) 2003, 2004 Lev Walkin <vlm@lionet.info>. All rights reserved.
+ * Copyright (c) 2003-2019 Lev Walkin <vlm@lionet.info>. All rights reserved.
  * Redistribution and modifications are permitted subject to BSD license.
  */
 #define	_POSIX_PTHREAD_SEMANTICS	/* for Sun */
 #define	_REENTRANT			/* for Sun */
+#define __EXTENSIONS__                  /* for Sun */
 #ifndef _BSD_SOURCE
 #define _BSD_SOURCE     /* for timegm(3) */
 #endif
@@ -48,7 +49,7 @@ static struct tm *gmtime_r(const time_t *tloc, struct tm *result) {
 
 #endif	/* _WIN32 */
 
-#if	defined(sun) || defined(_sun_) || defined(__solaris__)
+#if	defined(sun) || defined(__sun) || defined(__solaris__)
 #define	_EMULATE_TIMEGM
 #endif
 
@@ -56,7 +57,7 @@ static struct tm *gmtime_r(const time_t *tloc, struct tm *result) {
  * Where to look for offset from GMT, Phase I.
  * Several platforms are known.
  */
-#if defined(__FreeBSD__)				\
+#if defined(__FreeBSD__) || defined(__OpenBSD__)    \
 	|| (defined(__GNUC__) && defined(__APPLE_CC__))	\
 	|| (defined __GLIBC__ && __GLIBC__ >= 2)
 #undef	HAVE_TM_GMTOFF
@@ -144,6 +145,7 @@ static long GMTOFF(struct tm a){
 
 #ifndef HAVE_TIMEGM
 #ifdef	_EMULATE_TIMEGM
+#include <stdlib.h>
 static time_t timegm(struct tm *tm) {
 	time_t tloc;
 	ATZVARS;
@@ -166,7 +168,7 @@ static const ber_tlv_tag_t asn_DEF_GeneralizedTime_tags[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (26 << 2)),  /* [UNIVERSAL 26] IMPLICIT ...*/
 	(ASN_TAG_CLASS_UNIVERSAL | (4 << 2))    /* ... OCTET STRING */
 };
-static asn_per_constraints_t asn_DEF_GeneralizedTime_constraints = {
+static asn_per_constraints_t asn_DEF_GeneralizedTime_per_constraints = {
 	{ APC_CONSTRAINED, 7, 7, 0x20, 0x7e },  /* Value */
 	{ APC_SEMI_CONSTRAINED, -1, -1, 0, 0 }, /* Size */
 	0, 0
@@ -174,8 +176,7 @@ static asn_per_constraints_t asn_DEF_GeneralizedTime_constraints = {
 asn_TYPE_operation_t asn_OP_GeneralizedTime = {
 	OCTET_STRING_free,
 	GeneralizedTime_print,
-	OCTET_STRING_compare,   /* Does not normalize time zones! */
-	GeneralizedTime_constraint, /* Check validity of time */
+	GeneralizedTime_compare,
 	OCTET_STRING_decode_ber,    /* Implemented in terms of OCTET STRING */
 	GeneralizedTime_encode_der,
 	OCTET_STRING_decode_xer_utf8,
@@ -184,8 +185,8 @@ asn_TYPE_operation_t asn_OP_GeneralizedTime = {
 	0,
 	0,
 #else
-	0,
-	0,
+	OCTET_STRING_decode_oer,
+	OCTET_STRING_encode_oer,
 #endif  /* ASN_DISABLE_OER_SUPPORT */
 #ifdef	ASN_DISABLE_PER_SUPPORT
 	0,
@@ -194,21 +195,20 @@ asn_TYPE_operation_t asn_OP_GeneralizedTime = {
 	OCTET_STRING_decode_uper,
 	OCTET_STRING_encode_uper,
 #endif	/* ASN_DISABLE_PER_SUPPORT */
+	GeneralizedTime_random_fill,
 	0	/* Use generic outmost tag fetcher */
 };
 asn_TYPE_descriptor_t asn_DEF_GeneralizedTime = {
 	"GeneralizedTime",
 	"GeneralizedTime",
 	&asn_OP_GeneralizedTime,
-	GeneralizedTime_constraint, /* Check validity of time */
 	asn_DEF_GeneralizedTime_tags,
 	sizeof(asn_DEF_GeneralizedTime_tags)
 	  / sizeof(asn_DEF_GeneralizedTime_tags[0]) - 2,
 	asn_DEF_GeneralizedTime_tags,
 	sizeof(asn_DEF_GeneralizedTime_tags)
 	  / sizeof(asn_DEF_GeneralizedTime_tags[0]),
-	0,	/* No OER visible constraints */
-	&asn_DEF_GeneralizedTime_constraints,
+	{ 0, &asn_DEF_GeneralizedTime_per_constraints, GeneralizedTime_constraint },
 	0, 0,	/* No members */
 	0	/* No specifics */
 };
@@ -219,9 +219,10 @@ asn_TYPE_descriptor_t asn_DEF_GeneralizedTime = {
  * Check that the time looks like the time.
  */
 int
-GeneralizedTime_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
-		asn_app_constraint_failed_f *ctfailcb, void *app_key) {
-	const GeneralizedTime_t *st = (const GeneralizedTime_t *)sptr;
+GeneralizedTime_constraint(const asn_TYPE_descriptor_t *td, const void *sptr,
+                           asn_app_constraint_failed_f *ctfailcb,
+                           void *app_key) {
+    const GeneralizedTime_t *st = (const GeneralizedTime_t *)sptr;
 	time_t tloc;
 
 	errno = EPERM;			/* Just an unlikely error code */
@@ -237,10 +238,10 @@ GeneralizedTime_constraint(asn_TYPE_descriptor_t *td, const void *sptr,
 }
 
 asn_enc_rval_t
-GeneralizedTime_encode_der(asn_TYPE_descriptor_t *td, void *sptr,
-	int tag_mode, ber_tlv_tag_t tag,
-	asn_app_consume_bytes_f *cb, void *app_key) {
-	GeneralizedTime_t *st = (GeneralizedTime_t *)sptr;
+GeneralizedTime_encode_der(const asn_TYPE_descriptor_t *td, const void *sptr,
+                           int tag_mode, ber_tlv_tag_t tag,
+                           asn_app_consume_bytes_f *cb, void *app_key) {
+    GeneralizedTime_t *st;
 	asn_enc_rval_t erval;
 	int fv, fd;	/* seconds fraction value and number of digits */
 	struct tm tm;
@@ -249,38 +250,38 @@ GeneralizedTime_encode_der(asn_TYPE_descriptor_t *td, void *sptr,
 	/*
 	 * Encode as a canonical DER.
 	 */
-	errno = EPERM;
-	tloc = asn_GT2time_frac(st, &fv, &fd, &tm, 1);	/* Recognize time */
-	if(tloc == -1 && errno != EPERM)
-		/* Failed to recognize time. Fail completely. */
+    errno = EPERM;
+    tloc = asn_GT2time_frac((const GeneralizedTime_t *)sptr, &fv, &fd, &tm,
+                            1); /* Recognize time */
+    if(tloc == -1 && errno != EPERM) {
+        /* Failed to recognize time. Fail completely. */
 		ASN__ENCODE_FAILED;
+    }
 
-	st = asn_time2GT_frac(0, &tm, fv, fd, 1); /* Save time canonically */
-	if(!st) ASN__ENCODE_FAILED;	/* Memory allocation failure. */
+    st = asn_time2GT_frac(0, &tm, fv, fd, 1); /* Save time canonically */
+    if(!st) ASN__ENCODE_FAILED;               /* Memory allocation failure. */
 
-	erval = OCTET_STRING_encode_der(td, st, tag_mode, tag, cb, app_key);
+    erval = OCTET_STRING_encode_der(td, st, tag_mode, tag, cb, app_key);
 
-	FREEMEM(st->buf);
-	FREEMEM(st);
+    ASN_STRUCT_FREE(*td, st);
 
-	return erval;
+    return erval;
 }
 
 #ifndef	ASN___INTERNAL_TEST_MODE
 
 asn_enc_rval_t
-GeneralizedTime_encode_xer(asn_TYPE_descriptor_t *td, void *sptr,
-	int ilevel, enum xer_encoder_flags_e flags,
-		asn_app_consume_bytes_f *cb, void *app_key) {
-
-	if(flags & XER_F_CANONICAL) {
+GeneralizedTime_encode_xer(const asn_TYPE_descriptor_t *td, const void *sptr,
+                           int ilevel, enum xer_encoder_flags_e flags,
+                           asn_app_consume_bytes_f *cb, void *app_key) {
+    if(flags & XER_F_CANONICAL) {
 		GeneralizedTime_t *gt;
 		asn_enc_rval_t rv;
 		int fv, fd;		/* fractional parts */
 		struct tm tm;
 
 		errno = EPERM;
-		if(asn_GT2time_frac((GeneralizedTime_t *)sptr,
+		if(asn_GT2time_frac((const GeneralizedTime_t *)sptr,
 					&fv, &fd, &tm, 1) == -1
 				&& errno != EPERM)
 			ASN__ENCODE_FAILED;
@@ -301,9 +302,9 @@ GeneralizedTime_encode_xer(asn_TYPE_descriptor_t *td, void *sptr,
 #endif	/* ASN___INTERNAL_TEST_MODE */
 
 int
-GeneralizedTime_print(asn_TYPE_descriptor_t *td, const void *sptr, int ilevel,
-	asn_app_consume_bytes_f *cb, void *app_key) {
-	const GeneralizedTime_t *st = (const GeneralizedTime_t *)sptr;
+GeneralizedTime_print(const asn_TYPE_descriptor_t *td, const void *sptr,
+                      int ilevel, asn_app_consume_bytes_f *cb, void *app_key) {
+    const GeneralizedTime_t *st = (const GeneralizedTime_t *)sptr;
 
 	(void)td;	/* Unused argument */
 	(void)ilevel;	/* Unused argument */
@@ -612,7 +613,7 @@ asn_time2GT_frac(GeneralizedTime_t *opt_gt, const struct tm *tm, int frac_value,
 	const unsigned int buf_size =
 		4 + 2 + 2	/* yyyymmdd */
 		+ 2 + 2 + 2	/* hhmmss */
-		+ 1 + 6		/* .ffffff */
+		+ 1 + 9		/* .fffffffff */
 		+ 1 + 4		/* +hhmm */
 		+ 1		/* '\0' */
 		;
@@ -665,13 +666,13 @@ asn_time2GT_frac(GeneralizedTime_t *opt_gt, const struct tm *tm, int frac_value,
 	 * Deal with fractions.
 	 */
 	if(frac_value > 0 && frac_digits > 0) {
-		char *end = p + 1 + 6;	/* '.' + maximum 6 digits */
+		char *end = p + 1 + 9;	/* '.' + maximum 9 digits */
 		char *z = p;
 		long fbase;
 		*z++ = '.';
 
 		/* Place bounds on precision */
-		while(frac_digits-- > 6)
+		while(frac_digits-- > 9)
 			frac_value /= 10;
 
 		/* emulate fbase = pow(10, frac_digits) */
@@ -723,4 +724,106 @@ asn_time2GT_frac(GeneralizedTime_t *opt_gt, const struct tm *tm, int frac_value,
 	return opt_gt;
 }
 
+asn_random_fill_result_t
+GeneralizedTime_random_fill(const asn_TYPE_descriptor_t *td, void **sptr,
+                              const asn_encoding_constraints_t *constraints,
+                              size_t max_length) {
+    asn_random_fill_result_t result_ok = {ARFILL_OK, 1};
+    asn_random_fill_result_t result_failed = {ARFILL_FAILED, 0};
+    asn_random_fill_result_t result_skipped = {ARFILL_SKIPPED, 0};
+    static const char *values[] = {
+        "19700101000000",    "19700101000000-0000",   "19700101000000+0000",
+        "19700101000000Z",   "19700101000000.3Z",     "19821106210623.3",
+        "19821106210629.3Z", "19691106210827.3-0500", "19821106210629.456",
+    };
+    size_t rnd = asn_random_between(0, sizeof(values)/sizeof(values[0])-1);
+
+    (void)constraints;
+
+    if(max_length < sizeof("yyyymmddhhmmss") && !*sptr) {
+        return result_skipped;
+    }
+
+    if(*sptr) {
+        if(OCTET_STRING_fromBuf(*sptr, values[rnd], -1) != 0) {
+            if(!sptr) return result_failed;
+        }
+    } else {
+        *sptr = OCTET_STRING_new_fromBuf(td, values[rnd], -1);
+        if(!sptr) return result_failed;
+    }
+
+    return result_ok;
+}
+
+int
+GeneralizedTime_compare(const asn_TYPE_descriptor_t *td, const void *aptr,
+                        const void *bptr) {
+    const GeneralizedTime_t *a = aptr;
+    const GeneralizedTime_t *b = bptr;
+
+    (void)td;
+
+    if(a && b) {
+        int afrac_value, afrac_digits;
+        int bfrac_value, bfrac_digits;
+        int aerr, berr;
+        time_t at, bt;
+
+        errno = EPERM;
+        at = asn_GT2time_frac(a, &afrac_value, &afrac_digits, 0, 0);
+        aerr = errno;
+        errno = EPERM;
+        bt = asn_GT2time_frac(b, &bfrac_value, &bfrac_digits, 0, 0);
+        berr = errno;
+
+        if(at == -1 && aerr != EPERM) {
+            if(bt == -1 && berr != EPERM) {
+                return OCTET_STRING_compare(td, aptr, bptr);
+            } else {
+                return -1;
+            }
+        } else if(bt == -1 && berr != EPERM) {
+            return 1;
+        } else {
+            /* Both values are valid. */
+        }
+
+        if(at < bt) {
+            return -1;
+        } else if(at > bt) {
+            return 1;
+        } else if(afrac_digits == bfrac_digits) {
+            if(afrac_value == bfrac_value) {
+                return 0;
+            }
+            if(afrac_value < bfrac_value) {
+                return -1;
+            } else {
+                return 1;
+            }
+        } else if(afrac_digits == 0) {
+            return -1;
+        } else if(bfrac_digits == 0) {
+            return 1;
+        } else {
+            double afrac = (double)afrac_value / afrac_digits;
+            double bfrac = (double)bfrac_value / bfrac_digits;
+            if(afrac < bfrac) {
+                return -1;
+            } else if(afrac > bfrac) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    } else if(!a && !b) {
+        return 0;
+    } else if(!a) {
+        return -1;
+    } else {
+        return 1;
+    }
+
+}
 

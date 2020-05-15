@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2003, 2005 Lev Walkin <vlm@lionet.info>. All rights reserved.
+ * Copyright (c) 2003-2017 Lev Walkin <vlm@lionet.info>. All rights reserved.
  * Redistribution and modifications are permitted subject to BSD license.
  */
 #ifndef	_ENUMERATED_H_
@@ -16,6 +16,8 @@ typedef INTEGER_t ENUMERATED_t;		/* Implemented via INTEGER */
 extern asn_TYPE_descriptor_t asn_DEF_ENUMERATED;
 extern asn_TYPE_operation_t asn_OP_ENUMERATED;
 
+oer_type_decoder_f ENUMERATED_decode_oer;
+oer_type_encoder_f ENUMERATED_encode_oer;
 per_type_decoder_f ENUMERATED_decode_uper;
 per_type_encoder_f ENUMERATED_encode_uper;
 
@@ -27,6 +29,7 @@ per_type_encoder_f ENUMERATED_encode_uper;
 #define ENUMERATED_encode_der INTEGER_encode_der
 #define ENUMERATED_decode_xer INTEGER_decode_xer
 #define ENUMERATED_encode_xer INTEGER_encode_xer
+#define ENUMERATED_random_fill INTEGER_random_fill
 
 #ifdef __cplusplus
 }
