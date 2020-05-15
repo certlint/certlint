@@ -1,7 +1,7 @@
 # certlint
 X.509 certificate linter
 
-`certlint` is currently at version 0.9.0.  It does not yet build as a gem.
+`certlint` is currently at version 1.0.0.  It does not yet build as a gem.
 
 For now, execute by running:
 
@@ -25,7 +25,7 @@ See ext/README for instructions on building it.
 Messages will be output one per line.  Each line will start with a single
 capital letter, a colon, and a space. The letters indicate the type of message:
 
-* B: Bug. Your certificate has a feature not handled by certlint.
+* B: Bug. Your certificate has a feature not handled by `certlint`.
 * I: Information.  These are purely informational; no action is needed.
 * N: Notice.  These are items known to cause issues with one or more implementations of certificate processing but are not errors according to the standard.
 * W: Warning.  These are issues where a standard recommends differently but the standard uses terms such as "SHOULD" or "MAY".
@@ -34,6 +34,6 @@ capital letter, a colon, and a space. The letters indicate the type of message:
 
 ## Thanks
 
-Certlint was written by Peter Bowen (pzbowen@gmail.com).
+`certlint` was written by Peter Bowen (pzbowen@gmail.com).
 
 Contributors include Matt Palmer, Rob Stradling, David Keeler, and Karsten Weiss.
