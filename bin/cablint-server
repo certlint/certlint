@@ -1,0 +1,22 @@
+#!/usr/bin/ruby -Eutf-8:utf-8
+# encoding: UTF-8
+
+require 'certlint'
+
+$stdout.sync = true
+pem_cert = ""
+
+begin
+	ARGF.each do |line|
+		pem_cert << line
+		if line == "-----END CERTIFICATE-----\n"
+			m, der_cert = CertLint::PEMLint.lint(pem_cert, 'CERTIFICATE')
+			m << CertLint::CABLint.lint(der_cert)
+			m << "[EndOfLintIssues]"
+			$stdout.puts(m)
+			pem_cert = ""
+		end
+	end
+rescue Interrupt => e
+	$stderr.puts("Exiting")
+end
