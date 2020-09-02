@@ -26,6 +26,8 @@ module CertLint
     MONTHS_39 = Time.utc(2015, 4, 2)
     BR_825 = Time.utc(2018, 3, 1) # After (greater than), not on or after
     EV_825 = Time.utc(2017, 4, 22)
+    BR_398 = Time.utc(2020, 9, 1)
+    EV_398 = Time.utc(2020, 9, 1)
     NO_SHA1 = Time.utc(2016, 1, 1)
 
     # Allowed algorithms
@@ -325,13 +327,21 @@ module CertLint
         # For all of these, use the longest possible options (e.g. leap years, July/Aug/Sept 3 month seq)
 
         if subjattrs.include?('1.3.6.1.4.1.311.60.2.1.3') || subjattrs.include?('jurisdictionC')
-          if c.not_before >= EV_825
+          if c.not_before >= EV_398
+            if days > 398
+              messages << 'E: EV certificates must be 398 days in validity or less'
+            end
+          elsif c.not_before >= EV_825
             if days > 825
               messages << 'E: EV certificates must be 825 days in validity or less'
             end
           elsif days > (366 + 365 + 31 + 31 + 30 + 1)
             # EV: 27 months
             messages << 'E: EV certificates must be 27 months in validity or less'
+          end
+        elsif c.not_before >= BR_398
+          if days > 398
+            messages << 'E: BR certificates must be 398 days in validity or less'
           end
         elsif c.not_before > BR_825
           if days > 825
