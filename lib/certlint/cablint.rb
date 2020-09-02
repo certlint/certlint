@@ -330,6 +330,8 @@ module CertLint
           if c.not_before >= EV_398
             if days > 398
               messages << 'E: EV certificates must be 398 days in validity or less'
+            elsif days > 397
+              messages << 'W: EV certificates should be 397 days in validity or less'
             end
           elsif c.not_before >= EV_825
             if days > 825
@@ -342,6 +344,8 @@ module CertLint
         elsif c.not_before >= BR_398
           if days > 398
             messages << 'E: BR certificates must be 398 days in validity or less'
+          elsif days > 397
+            messages << 'W: BR certificates should be 397 days in validity or less'
           end
         elsif c.not_before > BR_825
           if days > 825
