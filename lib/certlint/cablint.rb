@@ -24,7 +24,7 @@ module CertLint
   class CABLint
     BR_EFFECTIVE = Time.utc(2012, 7, 1)
     MONTHS_39 = Time.utc(2015, 4, 2)
-    BR_825 = Time.utc(2018, 3, 1) # After (greater than), not on or after
+    BR_825 = Time.utc(2018, 3, 2) # After 1 March 2018 (greater than), not on or after
     EV_825 = Time.utc(2017, 4, 22)
     BR_398 = Time.utc(2020, 9, 1)
     EV_398 = Time.utc(2020, 9, 1)
@@ -348,7 +348,7 @@ module CertLint
           elsif days > 397
             messages << 'W: BR certificates should be 397 days in validity or less'
           end
-        elsif c.not_before > BR_825
+        elsif c.not_before >= BR_825
           if days > 825
             messages << 'E: BR certificates must be 825 days in validity or less'
           end
