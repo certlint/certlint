@@ -322,8 +322,7 @@ module CertLint
 
         # 24 hours per day, 60 minutes per hour, 60 seconds per minute
         # Add 1 second.  (A certificate whose notBefore and notAfter field values are the same has a validity period of 1 second).
-        # Ceiling to 1/1000, which will be fine for durations <= 42.5 years
-        days = ((c.not_after.utc - c.not_before.utc + 1)/(24*60*60)).ceil(3)
+        days = ((c.not_after.utc - c.not_before.utc + 1)/(24*60*60))
 
         # For all of these, use the longest possible options (e.g. leap years, July/Aug/Sept 3 month seq)
 
