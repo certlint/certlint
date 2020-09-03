@@ -10,7 +10,6 @@ This is not needed to build the source.
 
 git clone https://github.com/vlm/asn1c.git
 cd asn1c
-wget -O /dev/stdout https://github.com/robstradling/asn1c/commit/e404a34c5516b4846830e3d2337ce338ab6443bc.patch | patch -p1
 autoreconf -iv
 ./configure
 make
