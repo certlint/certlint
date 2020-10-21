@@ -88,6 +88,7 @@ module CertLint
       '2.5.4.46' => :X520dnQualifier, # dnQualifier
       '2.5.4.51' => :DirectoryString, # houseIdentifier
       '2.5.4.54' => :DirectoryString, # dmdName
+      '2.5.4.97' => :DirectoryString, # organizationIdentifier
     }
 
     # List of attributes that are known deprecated
