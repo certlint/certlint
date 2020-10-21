@@ -4,6 +4,9 @@
 
 struct asn_TYPE_descriptor_s;	/* Forward declaration */
 
+extern struct asn_TYPE_descriptor_s asn_DEF_TorServiceDescriptorHash;
+extern struct asn_TYPE_descriptor_s asn_DEF_TorServiceDescriptorSyntax;
+extern struct asn_TYPE_descriptor_s asn_DEF_CABFOrganizationIdentifier;
 extern struct asn_TYPE_descriptor_s asn_DEF_PostalAddress;
 extern struct asn_TYPE_descriptor_s asn_DEF_PKCS9String;
 extern struct asn_TYPE_descriptor_s asn_DEF_Features;
@@ -184,6 +187,10 @@ extern struct asn_TYPE_descriptor_s asn_DEF_NameRegistrationAuthorities;
 
 
 struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
+	/* From module CABForumEVGuidelines in asn1/CABForumEVGuidelines.asn1 */
+	&asn_DEF_TorServiceDescriptorHash,	
+	&asn_DEF_TorServiceDescriptorSyntax,	
+	&asn_DEF_CABFOrganizationIdentifier,	
 	/* From module MiscAttributeForDistinguishedNames in asn1/MiscAttr.asn1 */
 	&asn_DEF_PostalAddress,	
 	/* From module MiscImplicitDefinitions in asn1/MiscAttrImpl.asn1 */
