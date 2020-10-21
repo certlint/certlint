@@ -263,6 +263,13 @@ module CertLint
         unless subjattrs.include? 'C'
           messages << 'E: EV certificates must include countryName in subject'
         end
+
+        if subjattrs.include?('2.5.4.97') || subjattrs.include?('organizationIdentifier')
+          cabfOrgId = c.extensions.find { |ex| ex.oid == '2.23.140.3.1' }
+          if cabfOrgId.nil?
+            messages << 'E: EV certificates must include CABFOrganizationIdentifier when organizationIdentifier in subject'
+          end
+        end
       end
 
       # Poke at keyUsage if eku is empty to see if this usable with TLS
