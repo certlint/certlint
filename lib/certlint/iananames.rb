@@ -133,14 +133,14 @@ module CertLint
         # Check for wildcard rule
         parts = fqdn.split('.')
         if parts.count == 2 && (parts[0].include? '*')
-          messages << 'E: Wildcard to immediate left of public suffix'
+          messages << 'I: Wildcard to immediate left of public suffix'
         end
       rescue PublicSuffix::DomainNotAllowed
-        messages << 'W: Domain is bare public suffix'
+        messages << 'I: Domain is bare public suffix'
       end
       unless d.nil?
         if !d.sld.nil? && d.sld.include?('*')
-          messages << 'E: Wildcard to immediate left of public suffix'
+          messages << 'I: Wildcard to immediate left of public suffix'
         end
         if !d.domain.nil? && d.domain.include?('_')
           messages << 'W: Underscore in base domain'
