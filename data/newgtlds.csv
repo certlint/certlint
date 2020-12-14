@@ -1,4 +1,4 @@
->>> Updated on: 2020-10-21T12:02:02Z <<<
+>>> Updated on: 2020-12-14T12:02:02Z <<<
 tld,u-label,registry-operator,date-of-contract-signature,application-id,delegation-date
 aaa,,"American Automobile Association, Inc.",2015-02-26,1-1386-27446,2015-08-28
 aarp,,"AARP",2015-05-21,1-1169-4534,2015-11-03
@@ -75,7 +75,7 @@ auto,,"XYZ.COM LLC",2014-11-13,1-855-72019,2015-05-02
 autos,,"XYZ.COM LLC",2014-01-09,1-909-92065,2014-05-22
 avianca,,"Avianca Holdings S.A.",2015-01-08,1-1013-56131,2016-03-09
 aws,,"Amazon Registry Services, Inc.",2015-06-25,1-1315-68636,2016-03-25
-axa,,"AXA SA",2013-12-19,1-1746-50891,2014-03-19
+axa,,"AXA Group Operations SAS",2013-12-19,1-1746-50891,2014-03-19
 azure,,"Microsoft Corporation",2014-12-18,1-1129-27259,2015-06-06
 baby,,"XYZ.COM LLC",2015-04-09,1-1156-50969,2016-04-08
 baidu,,"Baidu, Inc.",2015-01-08,1-2088-98525,2016-01-05
@@ -181,7 +181,6 @@ cba,,"COMMONWEALTH BANK OF AUSTRALIA",2014-06-26,1-1672-4934,2015-06-22
 cbn,,"The Christian Broadcasting Network, Inc.",2014-08-22,1-1980-27252,2015-02-13
 cbre,,"CBRE, Inc.",2015-07-02,1-2116-80094,2016-07-02
 cbs,,"CBS Domains Inc.",2015-08-06,1-869-11721,2016-08-04
-ceb,,"The Corporate Executive Board Company",2015-04-09,1-1773-64649,2015-08-08
 center,,"Binky Moon, LLC",2013-11-07,1-1383-13918,2013-12-17
 ceo,,"CEOTLD Pty Ltd",2013-11-07,1-1706-31908,2013-12-28
 cern,,"European Organization for Nuclear Research (\"CERN\")",2014-06-05,1-1082-60500,2014-08-16
@@ -242,7 +241,7 @@ courses,,"OPEN UNIVERSITIES AUSTRALIA PTY LTD",2014-12-04,1-1327-45933,2015-02-2
 cpa,,"American Institute of Certified Public Accountants",2019-06-10,1-1910-48133,2019-09-20
 credit,,"Binky Moon, LLC",2014-03-20,1-1410-93823,2014-05-07
 creditcard,,"Binky Moon, LLC",2014-03-20,1-1412-63109,2014-04-29
-creditunion,,"CUNA Performance Resources, LLC",2015-01-22,1-1130-18309,2015-11-10
+creditunion,,"DotCooperation LLC",2015-01-22,1-1130-18309,2015-11-10
 cricket,,"dot Cricket Limited",2014-10-09,1-1205-96748,2014-11-17
 crown,,"Crown Equipment Corporation",2014-10-24,1-1277-15200,2015-06-19
 crs,,"Federated Co-operatives Limited",2014-04-03,1-2046-93306,2014-10-15
@@ -513,7 +512,6 @@ iveco,,"CNH Industrial N.V.",2015-09-03,1-2053-96234,2016-10-30
 jaguar,,"Jaguar Land Rover Ltd",2014-11-13,1-2033-3936,2015-10-27
 java,,"Oracle Corporation",2014-06-19,1-1785-88138,2015-03-03
 jcb,,"JCB Co., Ltd.",2014-11-20,1-1806-69861,2015-01-23
-jcp,,"JCP Media, Inc.",2015-04-23,1-1897-48644,2016-03-30
 jeep,,"FCA US LLC.",2015-07-30,1-2056-76990,2016-07-28
 jetzt,,"Binky Moon, LLC",2014-01-09,1-1758-31045,2014-03-15
 jewelry,,"Binky Moon, LLC",2015-03-05,1-1520-93221,2015-04-16
@@ -604,7 +602,6 @@ lplfinancial,,"LPL Holdings, Inc.",2015-07-30,1-1144-82616,2016-07-19
 ltd,,"Binky Moon, LLC",2014-09-25,1-1550-65638,2015-09-23
 ltda,,"InterNetX, Corp",2014-04-17,1-1013-35966,2014-08-16
 lundbeck,,"H. Lundbeck A/S",2015-08-06,1-2077-4329,2016-07-15
-lupin,,"LUPIN LIMITED",2014-11-07,1-1325-70178,2015-05-16
 luxe,,"Minds + Machines Group Limited",2014-01-09,1-1037-14905,2014-05-15
 luxury,,"Luxury Partners, LLC",2013-10-17,1-1265-36346,2014-01-18
 macys,,"Macys, Inc.",2015-07-31,1-1790-19744,2016-07-12
@@ -699,7 +696,7 @@ nrw,,"Minds + Machines GmbH",2013-11-21,1-994-3470,2014-07-11
 ntt,,"NIPPON TELEGRAPH AND TELEPHONE CORPORATION",2014-10-31,1-920-75151,2015-02-03
 nyc,,"The City of New York by and through the New York City Department of Information Technology & Telecommunications",2014-01-23,1-1715-21938,2014-03-20
 obi,,"OBI Group Holding SE & Co. KGaA",2014-09-25,1-1739-45800,2015-09-23
-observer,,"Top Level Spectrum, Inc.",2015-04-30,1-1732-536,2016-09-27
+observer,,"Dog Beach, LLC",2015-04-30,1-1732-536,2016-09-27
 off,,"Johnson Shareholdings, Inc.",2015-07-23,1-1248-7515,2016-07-21
 office,,"Microsoft Corporation",2015-03-12,1-1129-34449,2015-06-23
 okinawa,,"BRregistry, Inc.",2013-12-05,1-1147-43520,2014-03-02
@@ -710,7 +707,7 @@ ollo,,"Dish DBS Corporation",2015-06-04,1-2010-64737,2016-05-27
 omega,,"The Swatch Group Ltd",2015-01-08,1-2122-64214,2015-06-26
 one,,"One.com A/S",2014-11-07,1-979-77610,2015-01-22
 ong,,"Public Interest Registry",2014-03-06,1-910-64447,2014-07-27
-onl,,"I-Registry Ltd.",2013-09-16,1-1003-27595,2013-12-28
+onl,,"iRegistry GmbH",2013-09-16,1-1003-27595,2013-12-28
 online,,"DotOnline Inc.",2015-01-15,1-1070-97873,2015-03-16
 onyourside,,"Nationwide Mutual Insurance Company",2015-07-23,1-2083-37948,2016-07-15
 ooo,,"INFIBEAM AVENUES LIMITED",2014-01-09,1-1950-81778,2014-08-16
@@ -788,7 +785,7 @@ raid,,"Johnson Shareholdings, Inc.",2015-07-23,1-1248-89181,2016-07-21
 read,,"Amazon Registry Services, Inc.",2014-12-18,1-1317-97509,2015-12-05
 realestate,,"dotRealEstate LLC",2015-09-11,1-907-1363,2016-05-23
 realtor,,"Real Estate Domains LLC",2014-05-29,1-907-41079,2014-07-30
-realty,,"Fegistry, LLC",2015-03-19,1-1913-14988,2015-07-01
+realty,,"Dog Beach, LLC",2015-03-19,1-1913-14988,2015-07-01
 recipes,,"Binky Moon, LLC",2013-10-17,1-1603-97736,2013-12-17
 red,,"Afilias Limited",2013-11-07,1-868-93793,2014-01-18
 redstone,,"Redstone Haute Couture Co., Ltd.",2014-10-31,1-1321-41821,2015-03-28
@@ -809,7 +806,7 @@ restaurant,,"Binky Moon, LLC",2014-07-03,1-1610-3807,2014-08-08
 review,,"dot Review Limited",2014-11-20,1-1208-90224,2015-03-25
 reviews,,"Dog Beach, LLC",2013-09-13,1-1607-34771,2014-02-11
 rexroth,,"Robert Bosch GMBH",2015-06-18,1-1943-50410,2015-12-24
-rich,,"I-Registry Ltd.",2013-11-21,1-1003-1483,2014-01-18
+rich,,"iRegistry GmbH",2013-11-21,1-1003-1483,2014-01-18
 richardli,,"Pacific Century Asset Management (HK) Limited",2015-05-14,1-1309-98748,2016-05-11
 ricoh,,"Ricoh Company, Ltd.",2014-11-20,1-1101-5912,2015-06-22
 ril,,"Reliance Industries Limited",2015-04-02,1-1308-43524,2016-11-15
@@ -882,7 +879,6 @@ shopping,,"Binky Moon, LLC",2016-03-31,1-845-21316,2016-06-21
 shouji,,"Beijing Qihu Keji Co., Ltd.",2015-01-08,1-974-38448,2016-03-30
 show,,"Binky Moon, LLC",2015-03-05,1-1633-36635,2015-04-16
 showtime,,"CBS Domains Inc.",2015-08-06,1-869-34582,2016-08-04
-shriram,,"Shriram Capital Ltd.",2014-01-23,1-1857-52823,2014-12-30
 silk,,"Amazon Registry Services, Inc.",2015-06-25,1-1315-37701,2016-06-07
 sina,,"Sina Corporation",2015-03-12,1-950-30912,2016-03-30
 singles,,"Binky Moon, LLC",2013-08-27,1-1634-15520,2013-11-06
@@ -986,7 +982,7 @@ training,,"Binky Moon, LLC",2013-11-07,1-1652-41660,2013-12-28
 travelchannel,,"Lifestyle Domain Holdings, Inc.",2015-07-02,1-1326-13526,2016-06-23
 travelers,,"Travelers TLD, LLC",2015-03-26,1-1841-77153,2015-12-05
 travelersinsurance,,"Travelers TLD, LLC",2015-03-26,1-1895-33687,2015-12-15
-trust,,"NCC Group Domain Services, Inc.",2014-10-16,1-1075-15763,2014-12-06
+trust,,"UNR Corp.",2014-10-16,1-1075-15763,2014-12-06
 trv,,"Travelers TLD, LLC",2015-03-26,1-1893-86497,2015-12-11
 tube,,"Latin American Telecom LLC",2015-06-11,1-926-88379,2016-01-11
 tui,,"TUI AG",2014-07-03,1-874-4984,2014-09-27
