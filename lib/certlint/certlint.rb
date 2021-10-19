@@ -83,7 +83,7 @@ module CertLint
     begin
       der = validator.to_der
       unless der == content
-        messages << "W: #{pdu} is not encoded using DER"
+        messages << "E: #{pdu} is not encoded using DER"
       end
     rescue NoMemoryError
       messages << "E: BadDER in #{pdu}"
