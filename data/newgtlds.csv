@@ -1,4 +1,4 @@
->>> Updated on: 2021-10-18T19:20:04.383+0000 <<<
+>>> Updated on: 2021-11-08T14:47:02.894+0000 <<<
 "tld","u-label","registry-operator","date-of-contract-signature","application-id","delegation-date"
 "aaa","","American Automobile Association, Inc.","2015-02-26","1-1386-27446","2015-08-28"
 "aarp","","AARP","2015-05-21","1-1169-4534","2015-11-03"
@@ -656,7 +656,7 @@
 "msd","","MSD Registry Holdings, Inc.","2015-07-23","1-1704-5879","2016-07-23"
 "mtn","","MTN Dubai Limited","2014-12-04","1-2140-13825","2015-03-25"
 "mtr","","MTR Corporation Limited","2015-03-12","1-2028-44295","2015-10-07"
-"music","","DotMusic Limited","2021-05-04","1-1115-14110",""
+"music","","DotMusic Limited","2021-05-04","1-1115-14110","2021-10-29"
 "mutual","","Northwestern Mutual MU TLD Registry, LLC","2015-04-02","1-1187-18162","2016-04-05"
 "nab","","National Australia Bank Limited","2015-08-20","1-1724-35592","2016-08-18"
 "nagoya","","GMO Registry, Inc.","2013-10-24","1-1725-26914","2014-01-29"
@@ -1060,7 +1060,6 @@
 "xn--30rr7y","慈善","Excellent First Limited","2014-06-12","1-961-6109","2015-03-31"
 "xn--3bst00m","集团","Eagle Horizon Limited","2013-09-13","1-962-55795","2014-01-03"
 "xn--3ds443g","在线","TLD REGISTRY LIMITED OY","2013-09-08","1-1940-42600","2014-01-02"
-"xn--3oq18vl8pn36a","大众汽车","Volkswagen (China) Investment Co., Ltd.","2015-07-02","1-1824-64001","2016-08-16"
 "xn--3pxu8k","点看","VeriSign Sarl","2015-01-15","1-1254-85868","2015-07-28"
 "xn--42c2d9a","คอม","VeriSign Sarl","2015-01-15","1-1254-3015","2015-07-28"
 "xn--45q11c","八卦","Zodiac Gemini Ltd","2013-11-21","1-859-69634","2014-11-17"
