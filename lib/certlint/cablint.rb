@@ -477,14 +477,18 @@ module CertLint
             when 2
               val = genname.value
               if val.include? '*'
-                x = val.split('.', 2)
-                if (x.length > 1) && (x[1].include? '*')
-                  messages << 'E: Wildcard not in first label of FQDN'
-                elsif x.length == 1
-                  messages << 'E: Bare wildcard'
-                end
-                unless val.start_with? '*.'
-                  messages << 'W: Wildcard other than *.<fqdn> in SAN'
+                if is_ev
+                  messages << 'E: EV certificates must not contain wildcard FQDNs'
+                else
+                  x = val.split('.', 2)
+                  if (x.length > 1) && (x[1].include? '*')
+                    messages << 'E: Wildcard not in first label of FQDN'
+                  elsif x.length == 1
+                    messages << 'E: Bare wildcard'
+                  end
+                  unless val.start_with? '*.'
+                    messages << 'W: Wildcard other than *.<fqdn> in SAN'
+                  end
                 end
               end
               messages += CertLint::IANANames.lint(val).map { |m| m + ' in SAN' }
