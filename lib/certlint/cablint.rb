@@ -506,12 +506,17 @@ module CertLint
               messages << 'E: BR certificates must not contain uniformResourceIdentifier type alternative name'
               next
             when 7
-              if genname.value.length == 4 || genname.value.length == 16
-                n = IPAddr.new_ntoh(genname.value)
-                nameval = n.to_s.downcase
-              else
-                # Certlint already added an error for wrong size, so just skip here
+              if is_ev
+                messages << 'E: EV certificates must not contain iPAddress type alternative name'
                 next
+              else
+                if genname.value.length == 4 || genname.value.length == 16
+                  n = IPAddr.new_ntoh(genname.value)
+                  nameval = n.to_s.downcase
+                else
+                  # Certlint already added an error for wrong size, so just skip here
+                  next
+                end
               end
             when 8
               messages << 'E: BR certificates must not contain registeredID type alternative name'
