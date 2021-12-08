@@ -1,5 +1,5 @@
 Name,Reference
-6tisch.arpa.,[RFC-ietf-6tisch-minimal-security-15]
+6tisch.arpa.,[RFC9031]
 10.in-addr.arpa.,[RFC6761]
 16.172.in-addr.arpa.,[RFC6761]
 17.172.in-addr.arpa.,[RFC6761]
@@ -25,6 +25,7 @@ Name,Reference
 9.e.f.ip6.arpa.,[RFC6762]
 a.e.f.ip6.arpa.,[RFC6762]
 b.e.f.ip6.arpa.,[RFC6762]
+eap-noob.arpa.,[RFC-ietf-emu-eap-noob-06]
 home.arpa.,[RFC8375]
 example.,[RFC6761]
 example.com.,[RFC6761]
