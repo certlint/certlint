@@ -47,6 +47,23 @@ module CertLint
 
     LETTERS_NUMBERS = /\p{L}|\p{N}/
 
+    EV_PERMITTED_SUBJECT_ATTRIBUTES = [
+      'O', # EVG 9.2.1
+      'CN', # EVG 9.2.2
+      'businessCategory', # EVG 9.2.3
+      '1.3.6.1.4.1.311.60.2.1.1', 'jurisdictionL', # EVG 9.2.4
+      '1.3.6.1.4.1.311.60.2.1.2', 'jurisdictionST', # EVG 9.2.4
+      '1.3.6.1.4.1.311.60.2.1.3', 'jurisdictionC', # EVG 9.2.4
+      'serialNumber', # EVG 9.2.5
+      'street', # EVG 9.2.6
+      'L', # EVG 9.2.6
+      'ST', # EVG 9.2.6
+      'C', # EVG 9.2.6
+      'postalCode', # EVG 9.2.6
+      'OU', # EVG 9.2.7
+      '2.5.4.97', 'organizationIdentifier', # EVG 9.2.8
+    ]
+
     def self.lint(der)
       messages = []
       messages += CertLint.lint(der)
@@ -244,7 +261,8 @@ module CertLint
       end
       subjattrs = subjectarr.map { |a| a[0] }.uniq
 
-      if subjattrs.include?('1.3.6.1.4.1.311.60.2.1.3') || subjattrs.include?('jurisdictionC')
+      is_ev = subjattrs.include?('1.3.6.1.4.1.311.60.2.1.3') || subjattrs.include?('jurisdictionC')
+      if is_ev
         # EV
         messages << 'I: EV certificate identified'
         cert_type_identified = true
@@ -268,6 +286,12 @@ module CertLint
           cabfOrgId = c.extensions.find { |ex| ex.oid == '2.23.140.3.1' }
           if cabfOrgId.nil?
             messages << 'E: EV certificates must include CABFOrganizationIdentifier when organizationIdentifier in subject'
+          end
+        end
+
+        subjattrs.each do |attr|
+          if !EV_PERMITTED_SUBJECT_ATTRIBUTES.include? attr
+            messages << 'E: EV certificates must not include ' + attr + ' in subject' # EVG 9.2.9
           end
         end
       end
@@ -333,7 +357,7 @@ module CertLint
 
         # For all of these, use the longest possible options (e.g. leap years, July/Aug/Sept 3 month seq)
 
-        if subjattrs.include?('1.3.6.1.4.1.311.60.2.1.3') || subjattrs.include?('jurisdictionC')
+        if is_ev
           if c.not_before >= EV_398
             if days > 398
               messages << 'E: EV certificates must be 398 days in validity or less'
