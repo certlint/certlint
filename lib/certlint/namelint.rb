@@ -142,7 +142,7 @@ module CertLint
           end
 
           if DEPRECATED_ATTRIBUTES.include? type
-            attr_messages << "W: Name has deprecated attribute #{attrname}"
+            attr_messages << "I: Name has deprecated attribute #{attrname}"
           end
 
           attr_messages += CertLint.check_pdu(pdu, value.to_der)
