@@ -252,7 +252,7 @@ module CertLint
       # Things left are subscriber certificates
       cert_type_identified = false
 
-      # Use EKUs and Subject attribute types to guess the cert type
+      # Use EKUs, Subject attribute types, and Policies to guess the cert type
       eku = c.extensions.find { |ex| ex.oid == 'extendedKeyUsage' }
       if eku.nil?
         eku = []
@@ -261,7 +261,18 @@ module CertLint
       end
       subjattrs = subjectarr.map { |a| a[0] }.uniq
 
-      is_ev = subjattrs.include?('1.3.6.1.4.1.311.60.2.1.3') || subjattrs.include?('jurisdictionC')
+      is_ev = false
+      certpolicies = c.extensions.find { |ex| ex.oid == 'certificatePolicies' }
+      unless certpolicies.nil?
+        if certpolicies.value.include?('2.23.140.1.') # CABForum certificate policy present?
+          if certpolicies.value.include?('2.23.140.1.1') || certpolicies.value.include?('2.23.140.1.3') # EV TLS or EV Code Signing.
+            is_ev = true
+          end
+        elsif subjattrs.include?('1.3.6.1.4.1.311.60.2.1.3') || subjattrs.include?('jurisdictionC')
+          is_ev = true
+        end
+      end
+
       if is_ev
         # EV
         messages << 'I: EV certificate identified'
@@ -430,7 +441,6 @@ module CertLint
           end
         end
 
-        certpolicies = c.extensions.find { |ex| ex.oid == 'certificatePolicies' }
         if certpolicies.nil?
           messages << 'E: BR certificates must include certificatePolicies'
         else
