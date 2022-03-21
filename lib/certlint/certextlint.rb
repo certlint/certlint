@@ -17,6 +17,13 @@ require 'openssl'
 
 module CertLint
   class CertExtLint
+    # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-wcce/9da866e5-9ce9-4a83-9064-0d20af8b2ccf
+    # The Microsoft Certificate Template extension is defined as having two adjacent OPTIONAL tags of the same type (INTEGER).
+    # asn1c won't compile this, because it's not legal ASN.1.
+    UNLINTABLE_EXTENSIONS = [
+      '1.3.6.1.4.1.311.21.7'
+    ]
+
     UNSUPPORTED_EXTENSIONS = [
       '1.2.156.1.8888',
       '1.2.840.113533.7.65.0',
@@ -50,7 +57,10 @@ module CertLint
         messages << "E: Opaque or unknown extension (#{oid}) marked as critical"
       end
 
-      if UNSUPPORTED_EXTENSIONS.include? oid
+      if UNLINTABLE_EXTENSIONS.include? oid
+        messages << "I: Extension #{oid} has invalid ASN.1 specification and is ignored"
+        return messages
+      elsif UNSUPPORTED_EXTENSIONS.include? oid
         messages << "W: Extension #{oid} is treated as opaque extension"
         return messages
       end
