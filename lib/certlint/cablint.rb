@@ -567,6 +567,19 @@ module CertLint
             end
           end
         end
+
+        attr_types = subjectarr.map { |attr| attr[0] }
+        dup = attr_types.select { |el| attr_types.count(el) > 1 }.uniq
+        # streetAddress, OU, and DC can reasonably appear multiple times
+        dup.delete('street')
+        dup.delete('OU')
+        dup.delete('DC')
+        # There are people with multiple given names and surnames
+        dup.delete('GN')
+        dup.delete('SN')
+        dup.each do |type|
+          messages << "W: Name has multiple #{type} attributes"
+        end
       end
 
       unless cert_type_identified

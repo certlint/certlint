@@ -261,19 +261,6 @@ module CertLint
         end
       end
 
-      dup = attr_types.select { |el| attr_types.count(el) > 1 }.uniq
-      # streetAddress, OU, and DC can reasonably appear multiple times
-      dup.delete('2.5.4.9')
-      dup.delete('2.5.4.11')
-      dup.delete('0.9.2342.19200300.100.1.25')
-      # There are people with multiple given names and surnames
-      dup.delete('2.5.4.42')
-      dup.delete('2.5.4.4')
-      dup.each do |type|
-        attrname = attr_name(type)
-        messages << "W: Name has multiple #{attrname} attributes"
-      end
-
       # Empty names are valid but cause an exception when converting to a string
       if name.to_a.length > 0
         # Can OpenSSL handle the name?
