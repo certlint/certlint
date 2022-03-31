@@ -16,7 +16,8 @@ To install these use the following command:
 
 `sudo gem install simpleidn public_suffix`
 
-If you get errors maybe the g++ or gcc is missing:
+If you get errors maybe the g++ or gcc is missing.
+
 To install these use the follwoing command:
 
 `sudo apt install gcc g++`
