@@ -13,10 +13,12 @@ For now, execute by running:
 * `simpleidn`
 
 To install these use the following command:
+
 `sudo gem install simpleidn public_suffix`
 
 If you get errors maybe the g++ or gcc is missing:
 To install these use the follwoing command:
+
 `sudo apt install gcc g++`
 
 If using less than Ruby 2.3, you also need the `unf` gem.
