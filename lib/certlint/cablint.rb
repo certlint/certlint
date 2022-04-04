@@ -365,7 +365,6 @@ module CertLint
         if !eku.include?('TLS Web Server Authentication')
           messages << "W: TLS Server certificates must include serverAuth key purpose in extended key usage"
         end
-messages << 'I: Eljutott idaig'
 
         cert_type_identified = true
         # Delete our temp key purpose
