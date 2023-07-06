@@ -1,6 +1,6 @@
 #!/usr/bin/ruby -Eutf-8:utf-8
 # encoding: UTF-8
-# Copyright 2019 Sectigo Limited. All Rights Reserved.
+# Copyright 2023 Sectigo Limited. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License"). You may not
 # use this file except in compliance with the License. A copy of the License
@@ -16,11 +16,11 @@ require_relative 'asn1ext'
 
 module CertLint
 class ASN1Ext
-  class CABFOrganizationIdentifier < ASN1Ext
-    @pdu = :CABFOrganizationIdentifier
-    @critical_req = :optional
+  class MicrosoftNTDSCASecurity < ASN1Ext
+    @pdu = :GeneralNames
+    @critical_req = false
   end
 end
 end
 
-CertLint::CertExtLint.register_handler('2.23.140.3.1', CertLint::ASN1Ext::CABFOrganizationIdentifier)
+CertLint::CertExtLint.register_handler('1.3.6.1.4.1.311.25.2', CertLint::ASN1Ext::MicrosoftNTDSCASecurity)
