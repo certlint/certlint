@@ -32,6 +32,32 @@ extern struct asn_TYPE_descriptor_s asn_DEF_EcpkParameters;
 extern struct asn_TYPE_descriptor_s asn_DEF_ECParameters;
 extern struct asn_TYPE_descriptor_s asn_DEF_ECPVer;
 extern struct asn_TYPE_descriptor_s asn_DEF_Curve;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeExtn;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeInfo;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeData;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeImage;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeAudio;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeDetails;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeImageInfo;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeImageType;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeImageResolution;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeAudioInfo;
+extern struct asn_TYPE_descriptor_s asn_DEF_OtherLogotypeInfo;
+extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeReference;
+extern struct asn_TYPE_descriptor_s asn_DEF_HashAlgAndValue;
+extern struct asn_TYPE_descriptor_s asn_DEF_DateOfBirth;
+extern struct asn_TYPE_descriptor_s asn_DEF_PlaceOfBirth;
+extern struct asn_TYPE_descriptor_s asn_DEF_Gender;
+extern struct asn_TYPE_descriptor_s asn_DEF_CountryOfCitizenship;
+extern struct asn_TYPE_descriptor_s asn_DEF_CountryOfResidence;
+extern struct asn_TYPE_descriptor_s asn_DEF_BiometricSyntax;
+extern struct asn_TYPE_descriptor_s asn_DEF_BiometricData;
+extern struct asn_TYPE_descriptor_s asn_DEF_TypeOfBiometricData;
+extern struct asn_TYPE_descriptor_s asn_DEF_PredefinedBiometricType;
+extern struct asn_TYPE_descriptor_s asn_DEF_QCStatements;
+extern struct asn_TYPE_descriptor_s asn_DEF_QCStatement;
+extern struct asn_TYPE_descriptor_s asn_DEF_SemanticsInformation;
+extern struct asn_TYPE_descriptor_s asn_DEF_NameRegistrationAuthorities;
 extern struct asn_TYPE_descriptor_s asn_DEF_Attribute;
 extern struct asn_TYPE_descriptor_s asn_DEF_AttributeType;
 extern struct asn_TYPE_descriptor_s asn_DEF_AttributeValue;
@@ -158,32 +184,6 @@ extern struct asn_TYPE_descriptor_s asn_DEF_CRLReason;
 extern struct asn_TYPE_descriptor_s asn_DEF_CertificateIssuer;
 extern struct asn_TYPE_descriptor_s asn_DEF_HoldInstructionCode;
 extern struct asn_TYPE_descriptor_s asn_DEF_InvalidityDate;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeExtn;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeInfo;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeData;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeImage;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeAudio;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeDetails;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeImageInfo;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeImageType;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeImageResolution;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeAudioInfo;
-extern struct asn_TYPE_descriptor_s asn_DEF_OtherLogotypeInfo;
-extern struct asn_TYPE_descriptor_s asn_DEF_LogotypeReference;
-extern struct asn_TYPE_descriptor_s asn_DEF_HashAlgAndValue;
-extern struct asn_TYPE_descriptor_s asn_DEF_DateOfBirth;
-extern struct asn_TYPE_descriptor_s asn_DEF_PlaceOfBirth;
-extern struct asn_TYPE_descriptor_s asn_DEF_Gender;
-extern struct asn_TYPE_descriptor_s asn_DEF_CountryOfCitizenship;
-extern struct asn_TYPE_descriptor_s asn_DEF_CountryOfResidence;
-extern struct asn_TYPE_descriptor_s asn_DEF_BiometricSyntax;
-extern struct asn_TYPE_descriptor_s asn_DEF_BiometricData;
-extern struct asn_TYPE_descriptor_s asn_DEF_TypeOfBiometricData;
-extern struct asn_TYPE_descriptor_s asn_DEF_PredefinedBiometricType;
-extern struct asn_TYPE_descriptor_s asn_DEF_QCStatements;
-extern struct asn_TYPE_descriptor_s asn_DEF_QCStatement;
-extern struct asn_TYPE_descriptor_s asn_DEF_SemanticsInformation;
-extern struct asn_TYPE_descriptor_s asn_DEF_NameRegistrationAuthorities;
 
 
 struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
@@ -220,7 +220,35 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_ECParameters,	
 	&asn_DEF_ECPVer,	
 	&asn_DEF_Curve,	
-	/* From module PKIX1Explicit88 in asn1/rfc3280-PKIX1Explicit88.asn1 */
+	/* From module LogotypeCertExtn in asn1/rfc3709-LogotypeCertExtn.asn1 */
+	&asn_DEF_LogotypeExtn,	
+	&asn_DEF_LogotypeInfo,	
+	&asn_DEF_LogotypeData,	
+	&asn_DEF_LogotypeImage,	
+	&asn_DEF_LogotypeAudio,	
+	&asn_DEF_LogotypeDetails,	
+	&asn_DEF_LogotypeImageInfo,	
+	&asn_DEF_LogotypeImageType,	
+	&asn_DEF_LogotypeImageResolution,	
+	&asn_DEF_LogotypeAudioInfo,	
+	&asn_DEF_OtherLogotypeInfo,	
+	&asn_DEF_LogotypeReference,	
+	&asn_DEF_HashAlgAndValue,	
+	/* From module PKIXqualified88 in asn1/rfc3739-PKIXqualified88.asn1 */
+	&asn_DEF_DateOfBirth,	
+	&asn_DEF_PlaceOfBirth,	
+	&asn_DEF_Gender,	
+	&asn_DEF_CountryOfCitizenship,	
+	&asn_DEF_CountryOfResidence,	
+	&asn_DEF_BiometricSyntax,	
+	&asn_DEF_BiometricData,	
+	&asn_DEF_TypeOfBiometricData,	
+	&asn_DEF_PredefinedBiometricType,	
+	&asn_DEF_QCStatements,	
+	&asn_DEF_QCStatement,	
+	&asn_DEF_SemanticsInformation,	
+	&asn_DEF_NameRegistrationAuthorities,	
+	/* From module PKIX1Explicit88 in asn1/rfc5280-PKIX1Explicit88.asn1 */
 	&asn_DEF_Attribute,	
 	&asn_DEF_AttributeType,	
 	&asn_DEF_AttributeValue,	
@@ -300,7 +328,7 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_TerminalType,	
 	&asn_DEF_TeletexDomainDefinedAttributes,	
 	&asn_DEF_TeletexDomainDefinedAttribute,	
-	/* From module PKIX1Implicit88 in asn1/rfc3280-PKIX1Implicit88.asn1 */
+	/* From module PKIX1Implicit88 in asn1/rfc5280-PKIX1Implicit88.asn1 */
 	&asn_DEF_AuthorityKeyIdentifier,	
 	&asn_DEF_KeyIdentifier,	
 	&asn_DEF_SubjectKeyIdentifier,	
@@ -348,34 +376,6 @@ struct asn_TYPE_descriptor_s *asn_pdu_collection[] = {
 	&asn_DEF_CertificateIssuer,	
 	&asn_DEF_HoldInstructionCode,	
 	&asn_DEF_InvalidityDate,	
-	/* From module LogotypeCertExtn in asn1/rfc3709-LogotypeCertExtn.asn1 */
-	&asn_DEF_LogotypeExtn,	
-	&asn_DEF_LogotypeInfo,	
-	&asn_DEF_LogotypeData,	
-	&asn_DEF_LogotypeImage,	
-	&asn_DEF_LogotypeAudio,	
-	&asn_DEF_LogotypeDetails,	
-	&asn_DEF_LogotypeImageInfo,	
-	&asn_DEF_LogotypeImageType,	
-	&asn_DEF_LogotypeImageResolution,	
-	&asn_DEF_LogotypeAudioInfo,	
-	&asn_DEF_OtherLogotypeInfo,	
-	&asn_DEF_LogotypeReference,	
-	&asn_DEF_HashAlgAndValue,	
-	/* From module PKIXqualified88 in asn1/rfc3739-PKIXqualified88.asn1 */
-	&asn_DEF_DateOfBirth,	
-	&asn_DEF_PlaceOfBirth,	
-	&asn_DEF_Gender,	
-	&asn_DEF_CountryOfCitizenship,	
-	&asn_DEF_CountryOfResidence,	
-	&asn_DEF_BiometricSyntax,	
-	&asn_DEF_BiometricData,	
-	&asn_DEF_TypeOfBiometricData,	
-	&asn_DEF_PredefinedBiometricType,	
-	&asn_DEF_QCStatements,	
-	&asn_DEF_QCStatement,	
-	&asn_DEF_SemanticsInformation,	
-	&asn_DEF_NameRegistrationAuthorities,	
 	0
 };
 
