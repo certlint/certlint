@@ -488,7 +488,9 @@ module CertLint
               val = genname.value
               if val.include? '*'
                 if is_ev
-                  messages << 'E: EV certificates must not contain wildcard FQDNs'
+                  unless val.end_with? '.onion'
+                    messages << 'E: EV certificates must not contain wildcard FQDNs'
+                  end
                 else
                   x = val.split('.', 2)
                   if (x.length > 1) && (x[1].include? '*')
