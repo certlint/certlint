@@ -29,6 +29,7 @@ module CertLint
     @special_domains = nil
     def self.load_domains
       @iana_tlds = {}
+      @example_domains = ["example.com", "example.net", "example.org"]
       @special_domains = []
       spec_domains = {}
 
@@ -111,7 +112,11 @@ module CertLint
       end
 
       if ('.' + fqdn).end_with?(*@special_domains)
-        messages << 'E: FQDN under reserved or special domain'
+        if ('.' + fqdn).end_with?(*@example_domains)
+          messages << 'N: FQDN under example domain'
+        else
+          messages << 'E: FQDN under reserved or special domain'
+        end
       end
 
       if fqdn.include? 'xn--'
