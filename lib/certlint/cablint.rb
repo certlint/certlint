@@ -23,12 +23,18 @@ require_relative 'pemlint'
 module CertLint
   class CABLint
     BR_EFFECTIVE = Time.utc(2012, 7, 1)
+    NO_SHA1 = Time.utc(2016, 1, 1)
+    OCSP_REQUIRED = Time.utc(2020, 8, 20) # Effective date of BR v1.7.1, SC031.
+    OCSP_OPTIONAL = Time.utc(2024, 3, 15) # Effective date of BR v2.0.1, SC063.
+
     MONTHS_39 = Time.utc(2015, 4, 2)
     BR_825 = Time.utc(2018, 3, 2) # After 1 March 2018 (greater than), not on or after
     EV_825 = Time.utc(2017, 4, 22)
     BR_398 = Time.utc(2020, 9, 1)
     EV_398 = Time.utc(2020, 9, 1)
-    NO_SHA1 = Time.utc(2016, 1, 1)
+
+    SHORTLIVED_10 = Time.utc(2024, 3, 15)
+    SHORTLIVED_7 = Time.utc(2026, 3, 15)
 
     # Allowed algorithms
     SIGNATURE_ALGORITHMS = {
@@ -406,6 +412,21 @@ module CertLint
             messages << 'E: BR certificates must be 60 months in validity or less'
           end
         end
+
+        is_shortlived = false
+        if c.not_before >= SHORTLIVED_7
+          if days <= 7
+            is_shortlived = true
+          end
+        elsif c.not_before >= SHORTLIVED_10
+          if days <= 10
+            is_shortlived = true
+          end
+        end
+        if is_shortlived
+          messages << "I: Short-lived Subscriber Certificate identified"
+        end
+
         if (subjattrs & ['O', 'GN', 'SN']).empty?
           if subjattrs.include? 'L'
             messages << 'E: BR certificates without organizationName must not include localityName'
@@ -428,15 +449,40 @@ module CertLint
           end
         end
 
+        has_ocsp = false
+        has_caissuers = false
         aia = c.extensions.find { |ex| ex.oid == 'authorityInfoAccess' }
         if aia.nil?
-          messages << 'W: Certificate does not include authorityInformationAccess. BRs require OCSP stapling for this certificate.'
+          if c.not_before < OCSP_REQUIRED
+            messages << 'W: Certificate does not include authorityInformationAccess. BRs require OCSP stapling for this certificate.'
+          else
+            messages << 'E: BR certificates must include authorityInformationAccess'
+          end
         else
           aia_info = aia.value.split(/\n/)
-          unless aia_info.any? { |i| i.start_with? 'OCSP - URI:http://' }
-            messages << 'E: BR certificates must include an HTTP URL of the OCSP responder'
+          aia_info.each do |i|
+            if i.start_with? 'OCSP'
+              if i.start_with? 'OCSP - URI:http://'
+                has_ocsp = true
+              else
+                messages << "E: OCSP responder URL must be an HTTP URL"
+              end
+            elsif i.start_with? 'CA Issuers'
+              if i.start_with? 'CA Issuers - URI:http://'
+                has_caissuers = true
+              else
+                messages << "E: CA Issuers URL must be an HTTP URL"
+              end
+            end
           end
-          unless aia_info.any? { |i| i.start_with? 'CA Issuers - URI:http://' }
+          unless has_ocsp
+            if c.not_before < OCSP_REQUIRED
+              messages << "W: BRs require OCSP stapling for this certificate"
+            elsif c.not_before < OCSP_OPTIONAL
+              messages << 'E: BR certificates must include an HTTP URL of the OCSP responder'
+            end
+          end
+          unless has_caissuers
             messages << 'W: BR certificates should include an HTTP URL of the issuing CA\'s certificate'
           end
         end
@@ -449,12 +495,26 @@ module CertLint
           end
         end
 
+        has_crl = false
         crldp = c.extensions.find { |ex| ex.oid == 'crlDistributionPoints' }
         unless crldp.nil?
           dps = crldp.value.strip.split(/\n/).map(&:strip)
-          unless dps.any? { |dp| dp.start_with?('URI:http://') }
-            messages << 'E: BR certificates with CRL Distribution Point must include HTTP URL'
+          dps.each do |dp|
+            if dp.start_with? 'URI:'
+              if dp.start_with? 'URI:http://'
+                has_crl = true
+              else
+                messages << 'E: CRL Distribution Point must be an HTTP URL'
+              end
+            end
           end
+          if dps.length == 0
+            messages << 'E: BR certificates with CRL Distribution Points must include HTTP URL'
+          end
+        end
+
+        unless is_shortlived || has_crl || has_ocsp
+          messages << "E: Unless Short-lived, BR certificates must include the HTTP URL of at least one OCSP responder or CRL Distribution Point"
         end
 
         unless ku.nil?
