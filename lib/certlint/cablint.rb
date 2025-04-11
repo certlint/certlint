@@ -33,7 +33,7 @@ module CertLint
     BR_398 = Time.utc(2020, 9, 1)
     BR_200 = Time.utc(2026, 3, 15)
     BR_100 = Time.utc(2027, 3, 15)
-    BR_45 = Time.utc(2029, 3, 15)
+    BR_47 = Time.utc(2029, 3, 15)
 
     SHORTLIVED_10 = Time.utc(2024, 3, 15)
     SHORTLIVED_7 = Time.utc(2026, 3, 15)
@@ -376,11 +376,11 @@ module CertLint
 
         # For all of these, use the longest possible options (e.g. leap years, July/Aug/Sept 3 month seq)
 
-        if c.not_before >= BR_45
-          if days > 45
-            messages << 'E: BR certificates must be 45 days in validity or less'
-          elsif days > 44
-            messages << 'W: BR certificates should be 44 days in validity or less'
+        if c.not_before >= BR_47
+          if days > 47
+            messages << 'E: BR certificates must be 47 days in validity or less'
+          elsif days > 46
+            messages << 'W: BR certificates should be 46 days in validity or less'
           end
         elsif c.not_before >= BR_100
           if days > 100
