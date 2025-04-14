@@ -34,6 +34,8 @@ capital letter, a colon, and a space. The letters indicate the type of message:
 
 ## Thanks
 
-`certlint` was written by Peter Bowen (pzbowen@gmail.com).
+`certlint` is currently maintained in this repository by Rob Stradling (rob@sectigo.com) at Sectigo.
 
-Contributors include Matt Palmer, Rob Stradling, David Keeler, and Karsten Weiss.
+The original `certlint` code, written by Peter Bowen (pzbowen@gmail.com) at Amazon, is archived [here](https://github.com/amazon-archives/certlint).
+
+Other contributors to the project include Matt Palmer, David Keeler, and Karsten Weiss.
