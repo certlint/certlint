@@ -72,6 +72,33 @@ module CertLint
       '2.5.4.97', 'organizationIdentifier', # EVG 9.2.8
     ]
 
+     def self.determine_severity_no_aia_for_ca(cert_not_before, error_message_holder)
+      # Effective date of BR v1.7.1, SC031. Stapling exception allowed AIA to be omitted if stapling
+      if cert_not_before < OCSP_REQUIRED
+        error_message_holder << 'W: Certificate does not include authorityInformationAccess. BRs require OCSP stapling for this certificate.'
+      # Effective date of BR v2.0.1, SC063. Between SC031 and SC063 AIA was mandatory.  After optional.
+      elsif cert_not_before < OCSP_OPTIONAL
+        error_message_holder << 'E: BR certificates must include authorityInformationAccess'
+      end
+    end
+
+    def self.determine_severity_other_ad_in_aia_for_ca(cert_not_before, error_message_holder)
+      # Effective date of BR v2.0.1, SC063. After that only id-ad-ocsp and id-ad-caIssuers are allowed.
+      unless cert_not_before < OCSP_OPTIONAL
+        error_message_holder << 'E: Access Descriptions other than id-ad-ocsp and id-ad-caIssuers are not permitted.'
+      end
+    end
+
+    def self.determine_severity_no_ad_ocsp_in_aia_for_ca(cert_not_before, error_message_holder)
+      # Effective date of BR v1.7.1, SC031. id-ad-ocsp not mandantory before this date if OCSP stapiling is done
+      if cert_not_before < OCSP_REQUIRED
+        error_message_holder << "W: BRs require OCSP stapling for this certificate"
+      # Effective date of BR v2.0.1, SC063. Between SC031 and SC063 id-ad-ocsp was mandatory.  After optional.
+      elsif cert_not_before < OCSP_OPTIONAL
+        error_message_holder << 'E: BR certificates must include an HTTP URL of the OCSP responder'
+      end
+    end
+
     def self.lint(der)
       messages = []
       messages += CertLint.lint(der)
@@ -252,6 +279,36 @@ module CertLint
 
         if c.extensions.find { |ex| ex.oid == 'subjectAltName' }
           messages << 'W: CA certificates should not include subject alternative names'
+        end
+
+        is_ca_aia = c.extensions.find { |ex| ex.oid == 'authorityInfoAccess' }
+        ca_has_ocsp = false
+        ca_has_caissuers = false
+        if is_ca_aia.nil?
+          determine_severity_no_aia_for_ca(c.not_before, messages)
+        else
+          ca_aia_info = is_ca_aia.value.split(/\n/)
+          ca_aia_info.each do |i|
+            if i.start_with? 'OCSP'
+              ca_has_ocsp = true
+              unless i.start_with? 'OCSP - URI:http://'
+                messages << "E: OCSP responder URL must be an HTTP URL if present"
+              end
+            elsif i.start_with? 'CA Issuers'
+              ca_has_caissuers = true
+              unless i.start_with? 'CA Issuers - URI:http://'
+                messages << "E: CA Issuers URL must be an HTTP URL if present"
+              end
+            else
+              determine_severity_other_ad_in_aia_for_ca(c.not_before, messages)
+            end
+          end
+          unless ca_has_ocsp
+            determine_severity_no_ad_ocsp_in_aia_for_ca(c.not_before, messages)
+          end
+          unless ca_has_caissuers
+            messages << 'W: BR certificates should include an HTTP URL of the issuing CA\'s certificate'
+          end
         end
 
         return messages
