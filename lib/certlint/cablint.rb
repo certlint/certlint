@@ -256,8 +256,28 @@ module CertLint
           messages << 'W: CA certificates should not include subject alternative names'
         end
 
-        ca_has_ocsp = false
-        ca_has_caissuers = false
+        ca_crldp = c.extensions.find { |ex| ex.oid == 'crlDistributionPoints' }
+        if ca_crldp.nil?
+          messages << 'E: CA certificates must include crlDistributionPoints'
+        else
+          if ca_crldp.critical?
+            messages << 'E: CA certificates must not set crlDistributionPoints extension as critical'
+          end
+          ca_dps = ca_crldp.value.strip.split(/\n/).map(&:strip)
+          ca_dps.each do |dp|
+            if dp.start_with? 'URI:'
+              unless dp.start_with? 'URI:http://'
+                messages << 'E: CRL Distribution Point must be an HTTP URL'
+              end
+            elsif !dp.start_with? 'Full Name:'
+              messages << "E: DistributionPoints other than URIs are not permitted"
+            end
+          end
+          if ca_dps.length == 0
+            messages << 'E: CA certificates with crlDistributionPoints must include at least one HTTP URL'
+          end
+        end
+
         ca_aia = c.extensions.find { |ex| ex.oid == 'authorityInfoAccess' }
         if ca_aia.nil?
           if c.not_before < BR_1_7_1_EFFECTIVE
@@ -269,6 +289,8 @@ module CertLint
           if ca_aia.critical?
             messages << 'E: CA certificates must not set authorityInformationAccess extension as critical'
           end
+          ca_has_ocsp = false
+          ca_has_caissuers = false
           ca_aia_info = ca_aia.value.split(/\n/)
           ca_aia_info.each do |i|
             if i.start_with? '<EMPTY>'
@@ -562,18 +584,22 @@ module CertLint
         has_crl = false
         crldp = c.extensions.find { |ex| ex.oid == 'crlDistributionPoints' }
         unless crldp.nil?
+          if crldp.critical?
+            messages << 'E: BR certificates must not set crlDistributionPoints extension as critical'
+          end
           dps = crldp.value.strip.split(/\n/).map(&:strip)
           dps.each do |dp|
             if dp.start_with? 'URI:'
-              if dp.start_with? 'URI:http://'
-                has_crl = true
-              else
+              has_crl = true
+              unless dp.start_with? 'URI:http://'
                 messages << 'E: CRL Distribution Point must be an HTTP URL'
               end
+            elsif !dp.start_with? 'Full Name:'
+              messages << "E: DistributionPoints other than URIs are not permitted"
             end
           end
           if dps.length == 0
-            messages << 'E: BR certificates with CRL Distribution Points must include HTTP URL'
+            messages << 'E: BR certificates with crlDistributionPoints must include at least one HTTP URL'
           end
         end
 
