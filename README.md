@@ -1,7 +1,7 @@
 # certlint
 X.509 certificate linter
 
-`certlint` is currently at version 1.8.0.  It does not yet build as a gem.
+`certlint` is currently at version 1.8.1.  It does not yet build as a gem.
 
 For now, execute by running:
 
