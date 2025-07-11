@@ -22,11 +22,13 @@ require_relative 'pemlint'
 
 module CertLint
   class CABLint
-    NO_SHA1 = Time.utc(2016, 1, 1)
-    OCSP_REQUIRED = Time.utc(2020, 8, 20) # Effective date of BR v1.7.1, SC031.
-    OCSP_OPTIONAL = Time.utc(2024, 3, 15) # Effective date of BR v2.0.1, SC063.
+    BR_1_0_EFFECTIVE = Time.utc(2012, 7, 1) # Effective date of BR v1.0.
+    BR_1_7_1_EFFECTIVE = Time.utc(2020, 8, 20) # Effective date of BR v1.7.1, SC031.
+    BR_2_0_0_EFFECTIVE = Time.utc(2023, 4, 11) # Effective date of BR v2.0.0, SC062.
+    BR_2_0_1_EFFECTIVE = Time.utc(2024, 3, 15) # Effective date of BR v2.0.1, SC063.
 
-    BR_EFFECTIVE = Time.utc(2012, 7, 1)
+    NO_SHA1 = Time.utc(2016, 1, 1)
+
     MONTHS_39 = Time.utc(2015, 4, 2)
     EV_825 = Time.utc(2017, 4, 22)
     BR_825 = Time.utc(2018, 3, 2) # After 1 March 2018 (greater than), not on or after
@@ -71,33 +73,6 @@ module CertLint
       'OU', # EVG 9.2.7
       '2.5.4.97', 'organizationIdentifier', # EVG 9.2.8
     ]
-
-     def self.determine_severity_no_aia_for_ca(cert_not_before, error_message_holder)
-      # Effective date of BR v1.7.1, SC031. Stapling exception allowed AIA to be omitted if stapling
-      if cert_not_before < OCSP_REQUIRED
-        error_message_holder << 'W: Certificate does not include authorityInformationAccess. BRs require OCSP stapling for this certificate.'
-      # Effective date of BR v2.0.1, SC063. Between SC031 and SC063 AIA was mandatory.  After optional.
-      elsif cert_not_before < OCSP_OPTIONAL
-        error_message_holder << 'E: BR certificates must include authorityInformationAccess'
-      end
-    end
-
-    def self.determine_severity_other_ad_in_aia_for_ca(cert_not_before, error_message_holder)
-      # Effective date of BR v2.0.1, SC063. After that only id-ad-ocsp and id-ad-caIssuers are allowed.
-      unless cert_not_before < OCSP_OPTIONAL
-        error_message_holder << 'E: Access Descriptions other than id-ad-ocsp and id-ad-caIssuers are not permitted.'
-      end
-    end
-
-    def self.determine_severity_no_ad_ocsp_in_aia_for_ca(cert_not_before, error_message_holder)
-      # Effective date of BR v1.7.1, SC031. id-ad-ocsp not mandantory before this date if OCSP stapiling is done
-      if cert_not_before < OCSP_REQUIRED
-        error_message_holder << "W: BRs require OCSP stapling for this certificate"
-      # Effective date of BR v2.0.1, SC063. Between SC031 and SC063 id-ad-ocsp was mandatory.  After optional.
-      elsif cert_not_before < OCSP_OPTIONAL
-        error_message_holder << 'E: BR certificates must include an HTTP URL of the OCSP responder'
-      end
-    end
 
     def self.lint(der)
       messages = []
@@ -275,39 +250,54 @@ module CertLint
           unless ku.include? 'Digital Signature'
             messages << 'N: CA certificates without Digital Signature do not allow direct signing of OCSP responses'
           end
-       end
+        end
 
         if c.extensions.find { |ex| ex.oid == 'subjectAltName' }
           messages << 'W: CA certificates should not include subject alternative names'
         end
 
-        is_ca_aia = c.extensions.find { |ex| ex.oid == 'authorityInfoAccess' }
         ca_has_ocsp = false
         ca_has_caissuers = false
-        if is_ca_aia.nil?
-          determine_severity_no_aia_for_ca(c.not_before, messages)
+        ca_aia = c.extensions.find { |ex| ex.oid == 'authorityInfoAccess' }
+        if ca_aia.nil?
+          if c.not_before < BR_1_7_1_EFFECTIVE
+            messages << 'N: No authorityInformationAccess, so BRs require OCSP stapling for Subscriber Certificates.'
+          else
+            messages << 'W: CA certificates should include authorityInformationAccess'
+          end
         else
-          ca_aia_info = is_ca_aia.value.split(/\n/)
+          if ca_aia.critical?
+            messages << 'E: CA certificates must not set authorityInformationAccess extension as critical'
+          end
+          ca_aia_info = ca_aia.value.split(/\n/)
           ca_aia_info.each do |i|
-            if i.start_with? 'OCSP'
+            if i.start_with? '<EMPTY>'
+              messages << 'E: CA certificates with authorityInformationAccess must include at least one AccessDescription'
+            elsif i.start_with? 'OCSP'
               ca_has_ocsp = true
               unless i.start_with? 'OCSP - URI:http://'
-                messages << "E: OCSP responder URL must be an HTTP URL if present"
+                messages << "E: OCSP responder URL must be an HTTP URL"
               end
             elsif i.start_with? 'CA Issuers'
               ca_has_caissuers = true
               unless i.start_with? 'CA Issuers - URI:http://'
-                messages << "E: CA Issuers URL must be an HTTP URL if present"
+                messages << "E: CA Issuers URL must be an HTTP URL"
               end
             else
-              determine_severity_other_ad_in_aia_for_ca(c.not_before, messages)
+              messages << "E: AccessDescriptions other than id-ad-ocsp and id-ad-caIssuers are not permitted"
             end
           end
           unless ca_has_ocsp
-            determine_severity_no_ad_ocsp_in_aia_for_ca(c.not_before, messages)
+            if c.not_before < BR_1_7_1_EFFECTIVE
+              messages << 'E: CA certificates must include an HTTP URL of the OCSP responder'
+            elsif (c.not_before >= BR_2_0_0_EFFECTIVE) && (c.not_before < BR_2_0_1_EFFECTIVE)
+              messages << 'W: CA certificates should include an HTTP URL of the OCSP responder'
+            end
           end
           unless ca_has_caissuers
-            messages << 'W: BR certificates should include an HTTP URL of the issuing CA\'s certificate'
+            if c.not_before < BR_2_0_0_EFFECTIVE
+              messages << 'W: CA certificates should include an HTTP URL of the issuing CA\'s certificate'
+            end
           end
         end
 
@@ -474,7 +464,7 @@ module CertLint
           if days > (366 + 365 + 365 + 31 + 31 + 30 + 1)
             messages << 'E: BR certificates must be 39 months in validity or less'
           end
-        elsif c.not_before >= BR_EFFECTIVE
+        elsif c.not_before >= BR_1_0_EFFECTIVE
           if days > (366 + 365 + 365 + 365 + 366 + 1)
             messages << 'E: BR certificates must be 60 months in validity or less'
           end
@@ -524,32 +514,35 @@ module CertLint
         has_caissuers = false
         aia = c.extensions.find { |ex| ex.oid == 'authorityInfoAccess' }
         if aia.nil?
-          if c.not_before < OCSP_REQUIRED
-            messages << 'W: Certificate does not include authorityInformationAccess. BRs require OCSP stapling for this certificate.'
+          if c.not_before < BR_1_7_1_EFFECTIVE
+            messages << 'N: No authorityInformationAccess, so BRs require OCSP stapling for this Certificate.'
           else
             messages << 'E: BR certificates must include authorityInformationAccess'
           end
         else
+          if aia.critical?
+            messages << 'E: BR certificates must not set authorityInformationAccess extension as critical'
+          end
           aia_info = aia.value.split(/\n/)
           aia_info.each do |i|
-            if i.start_with? 'OCSP'
-              if i.start_with? 'OCSP - URI:http://'
-                has_ocsp = true
-              else
+            if i.start_with? '<EMPTY>'
+              messages << 'E: BR certificates with authorityInformationAccess must include at least one AccessDescription'
+            elsif i.start_with? 'OCSP'
+              has_ocsp = true
+              unless i.start_with? 'OCSP - URI:http://'
                 messages << "E: OCSP responder URL must be an HTTP URL"
               end
             elsif i.start_with? 'CA Issuers'
-              if i.start_with? 'CA Issuers - URI:http://'
-                has_caissuers = true
-              else
+              has_caissuers = true
+              unless i.start_with? 'CA Issuers - URI:http://'
                 messages << "E: CA Issuers URL must be an HTTP URL"
               end
+            else
+              messages << "E: AccessDescriptions other than id-ad-ocsp and id-ad-caIssuers are not permitted"
             end
           end
           unless has_ocsp
-            if c.not_before < OCSP_REQUIRED
-              messages << "W: BRs require OCSP stapling for this certificate"
-            elsif c.not_before < OCSP_OPTIONAL
+            if c.not_before < BR_2_0_1_EFFECTIVE
               messages << 'E: BR certificates must include an HTTP URL of the OCSP responder'
             end
           end
