@@ -273,12 +273,14 @@ module CertLint
           end
           ca_dps = ca_crldp.value.strip.split(/\n/).map(&:strip)
           ca_dps.each do |dp|
-            if dp.start_with? 'URI:'
-              unless dp.start_with? 'URI:http://'
-                messages << 'E: CRL Distribution Point must be an HTTP URL'
+            if dp != ""
+              if dp.start_with? 'URI:'
+                unless dp.start_with? 'URI:http://'
+                  messages << 'E: CRL Distribution Point must be an HTTP URL'
+                end
+              elsif !dp.start_with? 'Full Name:'
+                messages << "E: DistributionPoints other than URIs are not permitted"
               end
-            elsif !dp.start_with? 'Full Name:'
-              messages << "E: DistributionPoints other than URIs are not permitted"
             end
           end
           if ca_dps.length == 0
@@ -599,13 +601,15 @@ module CertLint
           end
           dps = crldp.value.strip.split(/\n/).map(&:strip)
           dps.each do |dp|
-            if dp.start_with? 'URI:'
-              has_crl = true
-              unless dp.start_with? 'URI:http://'
-                messages << 'E: CRL Distribution Point must be an HTTP URL'
+            if dp != ""
+              if dp.start_with? 'URI:'
+                has_crl = true
+                unless dp.start_with? 'URI:http://'
+                  messages << 'E: CRL Distribution Point must be an HTTP URL'
+                end
+              elsif !dp.start_with? 'Full Name:'
+                messages << "E: DistributionPoints other than URIs are not permitted"
               end
-            elsif !dp.start_with? 'Full Name:'
-              messages << "E: DistributionPoints other than URIs are not permitted"
             end
           end
           if dps.length == 0
