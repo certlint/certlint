@@ -264,7 +264,9 @@ module CertLint
 
         ca_crldp = c.extensions.find { |ex| ex.oid == 'crlDistributionPoints' }
         if ca_crldp.nil?
-          messages << 'E: CA certificates must include crlDistributionPoints'
+          if !is_self_signed_ca
+            messages << 'E: CA certificates must include crlDistributionPoints'
+          end
         else
           if ca_crldp.critical?
             messages << 'E: CA certificates must not set crlDistributionPoints extension as critical'
@@ -286,10 +288,12 @@ module CertLint
 
         ca_aia = c.extensions.find { |ex| ex.oid == 'authorityInfoAccess' }
         if ca_aia.nil?
-          if c.not_before < BR_1_7_1_EFFECTIVE
-            messages << 'N: No authorityInformationAccess, so BRs require OCSP stapling for Subscriber Certificates.'
-          else
-            messages << 'W: CA certificates should include authorityInformationAccess'
+          if !is_self_signed_ca
+            if c.not_before < BR_1_7_1_EFFECTIVE
+              messages << 'N: No authorityInformationAccess, so BRs require OCSP stapling for Subscriber Certificates.'
+            else
+              messages << 'W: CA certificates should include authorityInformationAccess'
+            end
           end
         else
           if ca_aia.critical?
