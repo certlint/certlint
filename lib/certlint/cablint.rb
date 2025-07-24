@@ -148,9 +148,11 @@ module CertLint
       end
 
       is_ca = false
+      is_self_signed_ca = false
       bc = c.extensions.find { |ex| ex.oid == 'basicConstraints' }
       unless bc.nil?
         is_ca = (bc.value.include? 'CA:TRUE')
+        is_self_signed_ca = (is_ca && c.verify(c.public_key))
       end
 
       subjectarr = c.subject.to_a.map do |a|
@@ -216,7 +218,11 @@ module CertLint
 
       # First check CA certs
       if is_ca
-        messages << 'I: CA certificate identified'
+        if is_self_signed_ca
+          messages << 'I: Self-signed CA certificate identified'
+        else
+          messages << 'I: CA certificate identified'
+        end
         unless subjectarr.any? { |d| d[0] == 'C' }
           messages << 'E: CA certificates must include countryName in subject'
         end
