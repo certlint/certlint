@@ -152,7 +152,10 @@ module CertLint
       bc = c.extensions.find { |ex| ex.oid == 'basicConstraints' }
       unless bc.nil?
         is_ca = (bc.value.include? 'CA:TRUE')
-        is_self_signed_ca = (is_ca && c.verify(c.public_key))
+        begin
+          is_self_signed_ca = (is_ca && c.verify(c.public_key))
+        rescue Exception => e
+        end
       end
 
       subjectarr = c.subject.to_a.map do |a|
