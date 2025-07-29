@@ -154,7 +154,7 @@ module CertLint
         is_ca = (bc.value.include? 'CA:TRUE')
         begin
           is_self_signed_ca = (is_ca && c.verify(c.public_key))
-        rescue Exception => e
+        rescue StandardError
         end
       end
 
