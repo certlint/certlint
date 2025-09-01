@@ -399,42 +399,65 @@ module CertLint
         end
       end
 
+# The following block is wrong and commented out.
+
+# The possiblity of no EKU was removed from the following if, because CAB Froum BRG 1.8.2 section 7.1.2.3 says: 
+# extKeyUsage(required) 
+# Either the value id-kp-serverAuth [RFC5280] or id-kp-clientAuth [RFC5280] or both values MUST be present. 
+# id-kp-emailProtection [RFC5280] MAY be present. 
+# Other values SHOULD NOT bepresent. The value anyExtendedKeyUsage MUST NOT bepresent.
+# Mozilla Root Policy 2.71 section 5.2 says:
+# Effective for certificates with a notBefore date of July 1, 2020 or later, end-entity certificates MUST include an EKU extension 
+# containing KeyPurposeId(s) describing the intended usage(s) of the certificate, 
+# and the EKU extension MUST NOT contain the KeyPurposeId anyExtendedKeyUsage.
+
+
+
       # Poke at keyUsage if eku is empty to see if this usable with TLS
       # If so, add a temporary value to check below
       # RFC 5280 #4.2.1.12 says serverAuth is "consistent" with
       #   digitalSignature, keyEncipherment or keyAgreement
       # RFC 5246 #7.4.2 sets further reqs for RSA
       # EC keys could be for ECDSA or ECDH so check for both
-      if eku.empty? && !ku.nil?
-        if key.is_a? OpenSSL::PKey::RSA
-          if ku.include?('Digital Signature') || ku.include?('Key Encipherment')
-            eku << 'tmp-serverauth-usable'
-          end
-        elsif key.is_a? OpenSSL::PKey::DSA
-          if ku.include?('Digital Signature')
-            eku << 'tmp-serverauth-usable'
-          end
-        elsif key.is_a? OpenSSL::PKey::EC
-          if ku.include?('Digital Signature') || ku.include?('Key Agreement')
-            eku << 'tmp-serverauth-usable'
-          end
-        end
+      
+      # The possiblity of no EKU was removed from the following if, because CAB Froum BRG 1.8.2 section 7.1.2.3 says: anyExtendedKeyusage MUST NOT present.
+      # Also Mozilla Root Policy 2.71 section 5.2 says the same
+ 
+#      if eku.empty? && !ku.nil?
+#        if key.is_a? OpenSSL::PKey::RSA
+#          if ku.include?('Digital Signature') || ku.include?('Key Encipherment')
+#            eku << 'tmp-serverauth-usable'
+#          end
+#        elsif key.is_a? OpenSSL::PKey::DSA
+#          if ku.include?('Digital Signature')
+#            eku << 'tmp-serverauth-usable'
+#          end
+#        elsif key.is_a? OpenSSL::PKey::EC
+#          if ku.include?('Digital Signature') || ku.include?('Key Agreement')
+#            eku << 'tmp-serverauth-usable'
+#          end
+#        end
+
       # If the certificate has neither keyUsage nor extendedKeyUsage, it is unrestricted
       # so it can be used for anything, including server authentication
-      elsif eku.empty? && ku.nil?
-          eku << 'tmp-serverauth-usable'
-      end
+#      elsif eku.empty? && ku.nil?
+#          eku << 'tmp-serverauth-usable'
+#      end
 
       # So many ways to indicate an in-scope certificate
-      if eku.include?('tmp-serverauth-usable') || \
-          eku.include?('TLS Web Server Authentication') || \
-          eku.include?('Any Extended Key Usage') || \
+
+
+#Changed because BRG 1.8.2 sec 7.1.2.3 and MRP 2.71 sec 5.2
+
+      # if eku.include?('tmp-serverauth-usable') || \
+        if  eku.include?('TLS Web Server Authentication') || \
           eku.include?('Netscape Server Gated Crypto') || \
           eku.include?('Microsoft Server Gated Crypto')
         messages << 'I: TLS Server certificate identified'
         if !eku.include?('TLS Web Server Authentication')
           messages << "W: TLS Server certificates must include serverAuth key purpose in extended key usage"
         end
+
         cert_type_identified = true
         # Delete our temp key purpose
         eku.delete('tmp-serverauth-usable')
@@ -443,8 +466,13 @@ module CertLint
         eku.delete('TLS Web Server Authentication')
         eku.delete('TLS Web Client Authentication')
         eku.delete('E-mail Protection')
+
+
         # Also implicitly allowed
-        eku.delete('Any Extended Key Usage')
+
+# This is removed, because of BRG 1.8.2 section 7.1.2.3 and MRP 2.71 section 5.2
+#       eku.delete('Any Extended Key Usage')
+
         # Intel AMT/vPro: https://software.intel.com/sites/manageability/AMT_Implementation_and_Reference_Guide/default.htm?turl=WordDocuments%2Facquiringanintelvprocertificate.htm
         if eku.include?('2.16.840.1.113741.1.2.3')
           messages << 'I: Intel AMT/vPro certificate identified'
