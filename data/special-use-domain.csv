@@ -1,7 +1,8 @@
 Name,Reference
 alt.,[RFC9476]
 6tisch.arpa.,[RFC9031]
-eap-noob.arpa.,[RFC9140]
+eap.arpa.,[RFC-ietf-emu-eap-arpa-10]
+eap-noob.arpa. (DEPRECATED),[RFC9140][RFC-ietf-emu-eap-arpa-10]
 home.arpa.,[RFC8375]
 10.in-addr.arpa.,[RFC6761]
 254.169.in-addr.arpa.,[RFC6762]
