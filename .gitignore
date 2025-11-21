@@ -1,2 +1,6 @@
 build-x509helper/asn1c
 *.gem
+good.pem
+good.der
+wrong.pem
+wrong.der
