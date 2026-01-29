@@ -59,10 +59,23 @@ module CertLint
       '1.2.840.113549.1.9.1' => :EmailAddress, # emailAddress
       '1.2.840.113549.1.9.2' => [:PKCS9String, :PKCS9], # unstructuredName
       '1.2.840.113549.1.9.8' => [:DirectoryString, 255], # unstructuredAddress
-      # CA/Browser Forum EV Gudelines
+      # CA/Browser Forum EV Guidelines
       '1.3.6.1.4.1.311.60.2.1.1' => :X520LocalityName, # jurisdictionOfIncorporationLocalityName
       '1.3.6.1.4.1.311.60.2.1.2' => :X520StateOrProvinceName, # jurisdictionOfIncorporationStateOrProvinceName
       '1.3.6.1.4.1.311.60.2.1.3' => [:X520countryName, :Country], # jurisdictionOfIncorporationCountryName
+      # BIMIGroup Mark Certificate Guidelines
+      '1.3.6.1.4.1.53087.1.2' => :DirectoryString, # trademarkOfficeName
+      '1.3.6.1.4.1.53087.1.3' => :DirectoryString, # trademarkCountryOrRegionName
+      '1.3.6.1.4.1.53087.1.4' => :DirectoryString, # trademarkIdentifier
+      '1.3.6.1.4.1.53087.1.5' => [:DirectoryString, 20], # legalEntityIdentifier
+      '1.3.6.1.4.1.53087.1.6' => :DirectoryString, # wordMark
+      '1.3.6.1.4.1.53087.1.13' => :DirectoryString, # markType
+      '1.3.6.1.4.1.53087.3.2' => [:X520countryName, :Country], # statuteCountryName
+      '1.3.6.1.4.1.53087.3.3' => :X520StateOrProvinceName, # statuteStateOrProvinceName
+      '1.3.6.1.4.1.53087.3.4' => :X520LocalityName, # statuteLocalityName
+      '1.3.6.1.4.1.53087.3.5' => :DirectoryString, # statuteCitation
+      '1.3.6.1.4.1.53087.3.6' => :DirectoryString, # statuteURL
+      '1.3.6.1.4.1.53087.5.1' => :DirectoryString, # priorUseMarkSourceURL
       # Attributes are taken from RFC 5280 if possible
       # Otherwise from X.520 using Annex C for upper bounds
       '2.5.4.3' => :X520CommonName, # CN
