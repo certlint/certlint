@@ -236,16 +236,36 @@ module CertLint
       # consistency
       k = OpenSSL::ASN1::OctetString.new(key_der)
       messages += check_pdu(:ECPoint, k.to_der)
-      begin
-        okey = OpenSSL::PKey::EC.new(spki_der)
-      rescue ArgumentError => e
-        messages << "E: EC public key #{e.message}"
+      # RFC 5480 2.2: First octet must be 0x04 (uncompressed), 0x02, or 0x03 (compressed)
+      # The point at infinity (0x00) must be rejected to avoid NULL pointer dereference
+      valid_point = true
+      if key_der.empty?
+        messages << 'E: EC public key is empty'
+        valid_point = false
+      elsif ![0x02, 0x03, 0x04].include?(key_der.bytes.first)
+        messages << 'E: EC public key has invalid point encoding (first octet must be 0x02, 0x03, or 0x04)'
+        valid_point = false
       end
-      if !okey.nil? && okey.public_key.infinity?
-        messages << 'E: EC Public key is infinity'
-      end
-      if !okey.nil? && !okey.public_key.on_curve?
-        messages << 'E: EC Public key is not on curve'
+      # Only attempt to access public_key if the point encoding is valid
+      if valid_point
+        begin
+          okey = OpenSSL::PKey::EC.new(spki_der)
+        rescue ArgumentError => e
+          messages << "E: EC public key #{e.message}"
+        end
+        if !okey.nil?
+          begin
+            if okey.public_key.infinity?
+              messages << 'E: EC public key is infinity'
+            end
+            if !okey.public_key.on_curve?
+              messages << 'E: EC public key is not on curve'
+            end
+          rescue
+            # Handle malformed points that pass encoding check but fail validation
+            messages << 'E: EC public key point is malformed'
+          end
+        end
       end
     else
       messages << 'W: Unknown public key type'

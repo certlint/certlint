@@ -119,6 +119,11 @@ module CertLint
         messages << 'E: Invalid subject public key'
         key = nil
       end
+
+      # Check if Certlint already found EC public key errors (invalid point encoding)
+      # to avoid segfault when accessing EC key properties
+      has_ec_errors = messages.any? { |m| m.include?('EC public key') }
+
       if key.is_a? OpenSSL::PKey::RSA
         if key.n.num_bits < 2048
           messages << 'E: RSA subject key modulus must be at least 2048 bits'
@@ -139,9 +144,20 @@ module CertLint
           messages << 'E: DSA subject key must have FIPS 186-4 compliant parameters'
         end
       elsif key.is_a? OpenSSL::PKey::EC
-        curve = key.group.curve_name
-        unless ['prime256v1', 'secp384r1', 'secp521r1'].include? curve
-          messages << 'E: EC subject key is not on allowed curve'
+        # Skip EC key property access if there are already EC public key errors
+        # to avoid NULL pointer dereference with invalid point encoding
+        if has_ec_errors
+          messages << 'E: EC subject key checks skipped due to invalid public key'
+        else
+          begin
+            curve = key.group.curve_name
+            unless ['prime256v1', 'secp384r1', 'secp521r1'].include? curve
+              messages << 'E: EC subject key is not on allowed curve'
+            end
+          rescue
+            # Handle malformed EC keys that have NULL internal structures
+            messages << 'E: EC subject key has malformed internal structures'
+          end
         end
       elsif !key.nil?
         messages << 'E: Subject key must be RSA, DSA, or EC'
