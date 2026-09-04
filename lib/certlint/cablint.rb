@@ -401,10 +401,28 @@ module CertLint
           messages << 'E: EV certificates must include countryName in subject'
         end
 
+        cabfOrgId = c.extensions.find { |ex| ex.oid == '2.23.140.3.1' }
+
         if subjattrs.include?('2.5.4.97') || subjattrs.include?('organizationIdentifier')
-          cabfOrgId = c.extensions.find { |ex| ex.oid == '2.23.140.3.1' }
           if cabfOrgId.nil?
             messages << 'E: EV certificates must include CABFOrganizationIdentifier when organizationIdentifier in subject'
+          end
+        end
+
+        # EVG 7.1.2.2: the cabfOrganizationIdentifier registration country must
+        # match the jurisdictionCountry (JoiC) in the subject DN
+        unless cabfOrgId.nil?
+          begin
+            der = OpenSSL::ASN1.decode(cabfOrgId.to_der).value.last.value
+            reg_country = OpenSSL::ASN1.decode(der).value[1].value
+            subjectarr.each do |a|
+              next unless a[0] == '1.3.6.1.4.1.311.60.2.1.3' || a[0] == 'jurisdictionC'
+              unless reg_country.casecmp(a[1]).zero?
+                messages << "E: cabfOrganizationIdentifier country does not match subject jurisdictionCountry"
+              end
+            end
+          rescue
+            # A malformed cabfOrganizationIdentifier is reported elsewhere by CertLint
           end
         end
 
