@@ -4,6 +4,9 @@ the commands below in the `ext` directory.
 ruby extconf.rb
 make
 
+You need to have gcc installed to run make. You can install it with the follwoing command:
+
+`sudo apt install gcc`
 
 To regenerate the source, run the following commands in the `ext` directory.
 This is not needed to build the source.
