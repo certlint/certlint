@@ -110,7 +110,8 @@ module CertLint
       hide :zero
       endian :big
       uint24	:chain_len
-      array :chain, :type => ASN1Cert, :read_until => lambda { array.num_bytes == chain_len }
+      # 'chain' is reserved by BinData (Enumerable#chain since Ruby 2.6)
+      array :certs, :type => ASN1Cert, :read_until => lambda { array.num_bytes == chain_len }
       count_bytes_remaining :zero
       virtual :assert => lambda { zero == 0 }
 
@@ -123,7 +124,7 @@ module CertLint
       end
 
       def chain_certificates
-        chain.map(&:certificate)
+        certs.map(&:certificate)
       end
     end
 
