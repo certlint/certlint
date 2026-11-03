@@ -20,7 +20,7 @@ module CertLint
     FQDN = /\A(#{DLABEL}\.)*#{DLABEL}\z/
 
     # Email addresses don't have '*' or '_'
-    EMAIL_SPLITTER = /\A(.*)@([^@]*)\z/
+    EMAIL_SPLITTER = /\A(.*)@([^@]*)\z/m
     EMAIL_DLABEL = '((?!-)[A-Za-z0-9-]{1,63}(?<!-))'.freeze
     EMAIL_DOMAIN = /\A(#{EMAIL_DLABEL}\.)*#{EMAIL_DLABEL}\z/
     EMAIL_ATOM = "[A-Za-z0-9!#\$%&'*+/=?^_`{|}~-]+".freeze
