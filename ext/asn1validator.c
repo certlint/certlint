@@ -46,14 +46,17 @@ static asn_TYPE_descriptor_t *asn1pdu_type_descriptor(VALUE pdu_type) {
  */
 static void *asn1pdu_decode_pdu(VALUE pdu_data, VALUE pdu_type) {
 	void *structure = NULL;
+	asn_TYPE_descriptor_t *td = asn1pdu_type_descriptor(pdu_type);
 	asn_dec_rval_t rv;
 
-	rv = ber_decode(NULL, asn1pdu_type_descriptor(pdu_type), &structure,
+	rv = ber_decode(NULL, td, &structure,
 	                RSTRING_PTR(pdu_data), RSTRING_LEN(pdu_data));
 
 	if (rv.code == RC_OK) {
 		return structure;
 	} else {
+		/* ber_decode may leave a partially decoded structure behind */
+		ASN_STRUCT_FREE(*td, structure);
 		rb_raise(rb_eArgError, "BER decoding failed at octet %ld: %s",
 		                            rv.consumed,
 		                            rv.code == RC_WMORE ? "Unexpected end of input" : "Parse error");
@@ -120,6 +123,7 @@ static VALUE asn1pdu_to_der(VALUE self) {
 		
 		derbuf = malloc(derlen);
 		if (derbuf == NULL) {
+			ASN_STRUCT_FREE(*asn1pdu_type_descriptor(t), pdu_structure);
 			rb_raise(rb_eNoMemError, "Unable to allocate memory for derbuf");
 			abort();  /* Unreachable, we hope */
 		}
