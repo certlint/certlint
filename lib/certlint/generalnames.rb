@@ -153,7 +153,8 @@ module CertLint
     def self.dnsname(orig_fqdn, is_constraint = false)
       messages = []
       if orig_fqdn.nil? || orig_fqdn.empty?
-        messages << 'E: DNSName is empty'
+        # A zero-length dNSName constraint matches every DNS name (RFC 5280 4.2.1.10)
+        messages << 'E: DNSName is empty' unless is_constraint
         return messages # Fatal to this entry
       end
       if !orig_fqdn.is_a? String
