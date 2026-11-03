@@ -219,7 +219,7 @@ module CertLint
           if d[1] !~ /\p{L}|\p{N}/
             messages << "E: #{d[0]} appears to only include metadata"
           end
-        else d[1] !~ /[A-Za-z0-9]/
+        elsif d[1] !~ /[A-Za-z0-9]/
           $stderr.puts "WARNING: Invalid encoding"
           messages << "E: #{d[0]} appears to only include metadata"
         end
