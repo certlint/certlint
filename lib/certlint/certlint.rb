@@ -300,9 +300,10 @@ module CertLint
       # Only attempt to access public_key if the point encoding is valid
       if valid_point
         begin
-          okey = OpenSSL::PKey::EC.new(spki_der)
-        rescue ArgumentError => e
-          messages << "E: EC public key #{e.message}"
+          # PKey::EC.new falls back to treating unparseable input as a curve name
+          okey = OpenSSL::PKey.read(spki_der)
+        rescue OpenSSL::PKey::PKeyError
+          messages << 'E: EC public key could not be parsed'
         end
         if !okey.nil?
           begin
