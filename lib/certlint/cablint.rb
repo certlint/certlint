@@ -176,7 +176,7 @@ module CertLint
 
       subjectarr = c.subject.to_a.map do |a|
         case a[2]
-        when 19, 22, 18, 36
+        when 19, 22, 18, 26
           # Printable, IA5, Numeric, Visible String
           # These should all be 7-bit, but convert to ensure
           a[1] = a[1].encode('UTF-8', 'ISO-8859-1')
