@@ -431,7 +431,7 @@ module CertLint
       messages << 'E: Old certificate version (not X.509v3)'
     end
 
-    if cert.serial.to_s =~ /^-/
+    if cert.serial.negative?
       messages << 'E: Negative serial number'
     elsif cert.serial.zero?
       messages << 'E: Serial number must be positive'
