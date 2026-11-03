@@ -177,7 +177,7 @@ module CertLint
           tag = value.tag
           case tag
           when 12 # UTF8
-            value = value.value
+            value = value.value.force_encoding('UTF-8')
             check_padding = true
           when 18 # Numeric (7-bit)
             value = value.value
