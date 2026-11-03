@@ -64,6 +64,52 @@ module CertLint
     '1.2.840.10045.4.3.4' => :ecdsa
   }
 
+  MAX_ASN1_DEPTH = 64
+
+  # Ruby's ASN.1 decode/to_der recurse per nesting level and raise
+  # SystemStackError on very deep input, so scan TLV headers first.
+  def self.asn1_too_deep?(der, limit = MAX_ASN1_DEPTH)
+    ends = [] # end offset of each open constructed element; nil if indefinite
+    pos = 0
+    len = der.bytesize
+    while pos < len
+      ends.pop while !ends.empty? && !ends.last.nil? && pos >= ends.last
+      tag = der.getbyte(pos)
+      pos += 1
+      if tag & 0x1f == 0x1f
+        pos += 1 while pos < len && der.getbyte(pos) & 0x80 != 0
+        pos += 1
+      end
+      return false if pos >= len
+      l = der.getbyte(pos)
+      pos += 1
+      if l == 0x80
+        clen = nil
+      elsif l > 0x80
+        n = l & 0x7f
+        return false if pos + n > len
+        clen = 0
+        n.times do
+          clen = (clen << 8) | der.getbyte(pos)
+          pos += 1
+        end
+      else
+        clen = l
+      end
+      if tag == 0 && clen == 0 # end-of-contents
+        ends.pop if !ends.empty? && ends.last.nil?
+      elsif tag & 0x20 != 0
+        ends << (clen.nil? ? nil : pos + clen)
+        return true if ends.length > limit
+      elsif clen.nil?
+        return false # primitive with indefinite length; decoder will reject
+      else
+        pos += clen
+      end
+    end
+    false
+  end
+
   def self.check_pdu(pdu, content)
     messages = []
     content.force_encoding('BINARY')
@@ -88,6 +134,11 @@ module CertLint
       end
     rescue NoMemoryError
       messages << "E: BadDER in #{pdu}"
+    end
+
+    if asn1_too_deep?(content)
+      messages << "F: ASN.1 nesting too deep in #{pdu}"
+      return messages # ASN.1 error is fatal
     end
 
     # A few things pass asn1c but fail to decode in OpenSSL/Ruby
