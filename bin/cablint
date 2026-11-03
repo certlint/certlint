@@ -25,7 +25,7 @@ ARGV.each do |file|
     der = raw
   end
 
-  m += CertLint::CABLint.lint(der)
+  m += CertLint::CABLint.lint(der) unless der.nil?
   m.each do |msg|
     begin
       puts "#{msg}\t#{fn}"
