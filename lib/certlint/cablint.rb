@@ -806,7 +806,7 @@ if __FILE__ == $PROGRAM_NAME
       der = raw
     end
 
-    m += CABLint.lint(der)
+    m += CABLint.lint(der) unless der.nil?
     m.each do |msg|
       puts "#{msg}\t#{fn}"
     end

@@ -11,7 +11,7 @@ begin
 		pem_cert << line
 		if line == "-----END CERTIFICATE-----\n"
 			m, der_cert = CertLint::PEMLint.lint(pem_cert, 'CERTIFICATE')
-			m << CertLint::CABLint.lint(der_cert)
+			m << CertLint::CABLint.lint(der_cert) unless der_cert.nil?
 			m << "[EndOfLintIssues]"
 			$stdout.puts(m)
 			pem_cert = ""
