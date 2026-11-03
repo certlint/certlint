@@ -245,15 +245,15 @@ module CertLint
                 ulabel = SimpleIDN.to_unicode(value.encode("UTF-8"))
               rescue SimpleIDN::ConversionError, EncodingError
                 messages << 'W: Bad IDN A-label in DNS Name'
-                ulabel = value
-              end
-              if ulabel.respond_to? :unicode_normalize
-                ulabel_nfc = ulabel.unicode_normalize(:nfc)
               else
-                ulabel_nfc = ulabel.to_nfc
-              end
-              if ulabel != ulabel_nfc
-                messages << 'E: Internationalized domain names must be in unicode normalization form C'
+                if ulabel.respond_to? :unicode_normalize
+                  ulabel_nfc = ulabel.unicode_normalize(:nfc)
+                else
+                  ulabel_nfc = ulabel.to_nfc
+                end
+                if ulabel != ulabel_nfc
+                  messages << 'E: Internationalized domain names must be in unicode normalization form C'
+                end
               end
             end
           when :PKCS9
