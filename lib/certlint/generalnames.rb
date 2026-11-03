@@ -118,7 +118,7 @@ module CertLint
         next unless label.start_with? 'xn--'
         begin
           ulabel = SimpleIDN.to_unicode(label.encode("UTF-8"))
-        rescue SimpleIDN::ConversionError
+        rescue SimpleIDN::ConversionError, EncodingError
           messages << 'W: Bad IDN A-label in Email Address'
           next
         end
@@ -191,7 +191,7 @@ module CertLint
         next unless label.start_with? 'xn--'
         begin
           ulabel = SimpleIDN.to_unicode(label.encode("UTF-8"))
-        rescue SimpleIDN::ConversionError
+        rescue SimpleIDN::ConversionError, EncodingError
           messages << 'W: Bad IDN A-label in DNS Name'
           next
         end

@@ -243,7 +243,7 @@ module CertLint
             if value.start_with? 'xn--'
               begin
                 ulabel = SimpleIDN.to_unicode(value.encode("UTF-8"))
-              rescue SimpleIDN::ConversionError
+              rescue SimpleIDN::ConversionError, EncodingError
                 messages << 'W: Bad IDN A-label in DNS Name'
                 ulabel = value
               end
