@@ -255,6 +255,10 @@ module CertLint
         messages << "I: No checks for URI"
         # No checks
       when 7 # IPAddress
+        if !genname.value.is_a? String
+          messages << 'F: IP Address is not a String'
+          return messages # Fatal
+        end
         len = genname.value.length
         if is_san
           unless len == 4 || len == 16
