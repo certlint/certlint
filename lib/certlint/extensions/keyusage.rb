@@ -24,6 +24,9 @@ class ASN1Ext
     def self.lint(content, cert, critical = false)
       messages = []
       messages += super(content, cert, critical)
+      if messages.any? { |m| m.start_with? 'F:' }
+        return messages
+      end
 
       v = OpenSSL::X509::Extension.new('2.5.29.15', content, critical).value.split(',').map(&:strip)
 
