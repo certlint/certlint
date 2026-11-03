@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.executables   = ['cablint', 'cablint-ct', 'certlint']
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency "bindata", ">= 2.5", "< 4"
   spec.add_runtime_dependency "public_suffix", "~> 2.0"
   spec.add_runtime_dependency "simpleidn", "~> 0.0"
 
