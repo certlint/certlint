@@ -82,8 +82,13 @@ class ASN1Ext
             txt = ''
             if user_notice[0].tag == 12 # UTF8String
               txt = user_notice[0].value.force_encoding('UTF-8')
-            elsif user_notice[0].tag == 12 # BMPString
-              txt = user_notice[0].value.encode('UTF-8', 'UTF-16BE')
+            elsif user_notice[0].tag == 30 # BMPString
+              begin
+                txt = user_notice[0].value.encode('UTF-8', 'UTF-16BE')
+              rescue EncodingError
+                messages << 'E: Certificate Policy explicit text is not a valid BMPString'
+                next
+              end
             elsif user_notice[0].tag == 22 # IA5String
               if cert.not_before > RFC6818_DATE
                 messages << 'E: Certificate Policy explicit text must not be IA5String'
