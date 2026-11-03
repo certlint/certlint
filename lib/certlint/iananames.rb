@@ -122,7 +122,7 @@ module CertLint
       if fqdn.include? 'xn--'
         begin
           u = SimpleIDN.to_unicode(fqdn.encode("UTF-8"))
-        rescue SimpleIDN::ConversionError
+        rescue SimpleIDN::ConversionError, EncodingError
           messages << 'W: Bad IDN A-label in DNS Name'
           u = fqdn
         end
