@@ -51,7 +51,7 @@ module CertLint
       end
 
       def set(v)
-        data = v
+        self.data = v
       end
 
       def certificate
